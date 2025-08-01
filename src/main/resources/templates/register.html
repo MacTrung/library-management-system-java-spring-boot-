@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - Hệ thống quản lý thư viện</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-form">
+            <h2>Đăng ký tài khoản</h2>
+            
+            <div th:if="${error}" class="alert alert-error">
+                <span th:text="${error}"></span>
+            </div>
+            
+            <form th:action="@{/register}" method="post" th:object="${user}">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập:</label>
+                    <input type="text" id="username" th:field="*{username}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mật khẩu:</label>
+                    <input type="password" id="password" th:field="*{password}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="firstName">Họ:</label>
+                    <input type="text" id="firstName" th:field="*{firstName}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Tên:</label>
+                    <input type="text" id="lastName" th:field="*{lastName}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" th:field="*{email}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Số điện thoại:</label>
+                    <input type="tel" id="phone" th:field="*{phone}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Địa chỉ:</label>
+                    <textarea id="address" th:field="*{address}"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Đăng ký</button>
+            </form>
+            
+            <div class="login-links">
+                <a th:href="@{/login}">Đã có tài khoản? Đăng nhập</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

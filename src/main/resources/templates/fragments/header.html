@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <header th:fragment="header" class="main-header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <a th:href="@{/dashboard}">
+                    <span class="icon">📚</span>
+                    Hệ thống quản lý thư viện
+                </a>
+            </div>
+            
+            <div class="nav-menu">
+                <div sec:authorize="hasRole('ADMIN')" class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle">
+                        <span class="icon">⚙️</span>
+                        Quản lý
+                    </a>
+                    <div class="dropdown-menu">
+                        <a th:href="@{/admin/books}" class="dropdown-item">
+                            <span class="icon">📚</span>
+                            Quản lý sách
+                        </a>
+                        <a th:href="@{/admin/authors}" class="dropdown-item">
+                            <span class="icon">✍️</span>
+                            Quản lý tác giả
+                        </a>
+                        <a th:href="@{/admin/users}" class="dropdown-item">
+                            <span class="icon">👥</span>
+                            Quản lý người dùng
+                        </a>
+                        <a th:href="@{/admin/borrow-records}" class="dropdown-item">
+                            <span class="icon">📋</span>
+                            Quản lý mượn trả
+                        </a>
+                        <a th:href="@{/admin/extension-requests}" class="dropdown-item">
+                            <span class="icon">⏰</span>
+                            Yêu cầu gia hạn
+                        </a>
+                        <a th:href="@{/admin/bookshelves}" class="dropdown-item">
+                            <span class="icon">🗄️</span>
+                            Quản lý tủ sách
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="nav-item">
+                    <a th:href="@{/books}" class="nav-link">
+                        <span class="icon">🔍</span>
+                        Tìm sách
+                    </a>
+                </div>
+                
+                <div sec:authorize="hasRole('USER')" class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle">
+                        <span class="icon">👤</span>
+                        Cá nhân
+                    </a>
+                    <div class="dropdown-menu">
+                        <a th:href="@{/user/borrow-records}" class="dropdown-item">
+                            <span class="icon">📖</span>
+                            Lịch sử mượn
+                        </a>
+                        <a th:href="@{/user/extension-requests}" class="dropdown-item">
+                            <span class="icon">⏰</span>
+                            Yêu cầu gia hạn
+                        </a>
+                        <a th:href="@{/user/profile}" class="dropdown-item">
+                            <span class="icon">⚙️</span>
+                            Thông tin cá nhân
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="nav-item">
+                    <a th:href="@{/logout}" class="nav-link">
+                        <span class="icon">🚪</span>
+                        Đăng xuất
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Session timeout warning -->
+    <div id="sessionWarning" class="session-warning">
+        <p><strong>Cảnh báo:</strong> Phiên của bạn sẽ kết thúc sau 5 phút nữa.</p>
+        <button onclick="extendSession()" class="btn btn-sm" style="margin-top: 0.5rem;">Gia hạn phiên</button>
+    </div>
+    
+    <script>
+        // Session timeout management
+        let sessionTimeout;
+        let warningTimeout;
+        
+        function resetSessionTimer() {
+            clearTimeout(sessionTimeout);
+            clearTimeout(warningTimeout);
+            
+            // Show warning after 10 minutes (600000ms)
+            warningTimeout = setTimeout(showSessionWarning, 600000);
+            
+            // Logout after 15 minutes (900000ms)
+            sessionTimeout = setTimeout(logoutUser, 900000);
+        }
+        
+        function showSessionWarning() {
+            document.getElementById('sessionWarning').classList.add('show');
+        }
+        
+        function hideSessionWarning() {
+            document.getElementById('sessionWarning').classList.remove('show');
+        }
+        
+        function extendSession() {
+            // Make a request to extend session
+            fetch('/api/extend-session', { method: 'POST' })
+                .then(() => {
+                    hideSessionWarning();
+                    resetSessionTimer();
+                })
+                .catch(() => {
+                    console.error('Failed to extend session');
+                });
+        }
+        
+        function logoutUser() {
+            window.location.href = '/logout';
+        }
+        
+        // Reset timer on user activity
+        document.addEventListener('click', resetSessionTimer);
+        document.addEventListener('keypress', resetSessionTimer);
+        document.addEventListener('scroll', resetSessionTimer);
+        
+        // Initialize timer
+        resetSessionTimer();
+    </script>
+</body>
+</html>

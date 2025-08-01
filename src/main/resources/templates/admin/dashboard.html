@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Quản trị viên</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div th:replace="fragments/header :: header"></div>
+    
+    <div class="container">
+        <div class="dashboard">
+            <div class="page-header">
+                <h1>Dashboard Quản trị viên</h1>
+                <p>Chào mừng, <span th:text="${user.fullName}"></span>!</p>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-content">
+                        <h3>Tổng số sách</h3>
+                        <div class="stat-number" th:text="${totalBooks}">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">📖</div>
+                    <div class="stat-content">
+                        <h3>Sách đang được mượn</h3>
+                        <div class="stat-number" th:text="${borrowedBooks}">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card warning">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-content">
+                        <h3>Sách quá hạn</h3>
+                        <div class="stat-number" th:text="${overdueBooks}">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <h3>Người dùng hoạt động</h3>
+                        <div class="stat-number" th:text="${activeUsers}">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card info">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-content">
+                        <h3>Yêu cầu gia hạn</h3>
+                        <div class="stat-number" th:text="${pendingRequests}">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-charts">
+                <div class="chart-container">
+                    <h3>Thống kê mượn sách theo tháng</h3>
+                    <canvas id="borrowChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Phân bố theo thể loại</h3>
+                    <canvas id="genreChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="dashboard-actions">
+                <h2>Quản lý hệ thống</h2>
+                <div class="action-grid">
+                    <a th:href="@{/admin/books}" class="action-card">
+                        <div class="action-icon">📚</div>
+                        <div class="action-content">
+                            <h3>Quản lý sách</h3>
+                            <p>Thêm, sửa, xóa thông tin sách trong thư viện</p>
+                        </div>
+                    </a>
+                    
+                    <a th:href="@{/admin/authors}" class="action-card">
+                        <div class="action-icon">✍️</div>
+                        <div class="action-content">
+                            <h3>Quản lý tác giả</h3>
+                            <p>Quản lý thông tin tác giả và tác phẩm</p>
+                        </div>
+                    </a>
+                    
+                    <a th:href="@{/admin/borrow-records}" class="action-card">
+                        <div class="action-icon">📋</div>
+                        <div class="action-content">
+                            <h3>Quản lý mượn trả</h3>
+                            <p>Theo dõi và xử lý các đơn mượn sách</p>
+                        </div>
+                    </a>
+                    
+                    <a th:href="@{/admin/users}" class="action-card">
+                        <div class="action-icon">👥</div>
+                        <div class="action-content">
+                            <h3>Quản lý người dùng</h3>
+                            <p>Quản lý tài khoản và thông tin người dùng</p>
+                        </div>
+                    </a>
+                    
+                    <a th:href="@{/admin/extension-requests}" class="action-card">
+                        <div class="action-icon">⏰</div>
+                        <div class="action-content">
+                            <h3>Yêu cầu gia hạn</h3>
+                            <p>Xử lý các yêu cầu gia hạn từ người dùng</p>
+                        </div>
+                    </a>
+                    
+                    <a th:href="@{/admin/bookshelves}" class="action-card">
+                        <div class="action-icon">🗄️</div>
+                        <div class="action-content">
+                            <h3>Quản lý tủ sách</h3>
+                            <p>Quản lý vị trí và phân loại tủ sách</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Sample chart data - in real application, this would come from the server
+        const borrowCtx = document.getElementById('borrowChart').getContext('2d');
+        new Chart(borrowCtx, {
+            type: 'line',
+            data: {
+                labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6'],
+                datasets: [{
+                    label: 'Số lượt mượn',
+                    data: [65, 59, 80, 81, 56, 55],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        const genreCtx = document.getElementById('genreChart').getContext('2d');
+        new Chart(genreCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Văn học', 'Khoa học', 'Lịch sử', 'Triết học', 'Khác'],
+                datasets: [{
+                    data: [30, 25, 20, 15, 10],
+                    backgroundColor: [
+                        '#3498db',
+                        '#e74c3c',
+                        '#f39c12',
+                        '#27ae60',
+                        '#9b59b6'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    </script>
+</body>
+</html>

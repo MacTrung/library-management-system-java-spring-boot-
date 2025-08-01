@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết sách</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <h1>Chi tiết sách</h1>
+    <a th:href="@{/admin/books}" class="btn btn-secondary">← Quay lại danh sách</a>
+
+    <div class="book-detail">
+        <p><strong>ID:</strong> <span th:text="${book.id}">1</span></p>
+        <p><strong>Tên sách:</strong> <span th:text="${book.title}">Tên</span></p>
+        <p><strong>Mô tả:</strong> <span th:text="${book.description}">Mô tả</span></p>
+        <p><strong>Năm xuất bản:</strong> <span th:text="${book.publicationYear}">2025</span></p>
+        <p><strong>Lần tái bản:</strong> <span th:text="${book.edition}">1</span></p>
+        <p><strong>Tình trạng:</strong> <span th:text="${book.condition.displayName}">Mới</span></p>
+        <p><strong>Có thể cho mượn:</strong>
+            <span th:text="${book.canBorrow} ? 'Có' : 'Không'">Có</span>
+        </p>
+
+        <p><strong>Tác giả:</strong> <span th:text="${book.authorsString}">Nguyễn Văn A</span></p>
+        <p><strong>Thể loại:</strong> <span th:text="${book.genresString}">Khoa học, Lịch sử</span></p>
+
+        <p><strong>Tủ sách:</strong>
+            <span th:if="${book.bookshelf != null}">
+                <span th:text="${book.bookshelf.code}">T1</span>
+                (<span th:text="'Tầng ' + ${book.bookshelf.floor} + ' - Khu ' + ${book.bookshelf.section}">Tầng 1 - Khu A</span>)
+            </span>
+            <span th:if="${book.bookshelf == null}">Không xác định</span>
+        </p>
+
+        <hr>
+        <p><strong>Ngày tạo:</strong> <span th:text="${#temporals.format(book.createdAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+        <p><strong>Người tạo:</strong> <span th:text="${book.createdBy}"></span></p>
+        <p><strong>Ngày cập nhật:</strong> <span th:text="${#temporals.format(book.updatedAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+        <p><strong>Người cập nhật:</strong> <span th:text="${book.updatedBy}"></span></p>
+    </div>
+
+</div>
+</body>
+</html>

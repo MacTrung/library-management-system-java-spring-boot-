@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý tác giả</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Quản lý tác giả</h1>
+        <a th:href="@{/admin/authors/create}" class="btn btn-primary">
+            <i class="icon">➕</i> Thêm tác giả
+        </a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success">
+        <span th:text="${success}"></span>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error">
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="search-form">
+        <form th:action="@{/admin/authors}" method="get">
+            <div class="form-row">
+                <div class="form-group">
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm kiếm theo tên hoặc tiểu sử...">
+                </div>
+                <div class="form-group">
+                    <input type="number" name="birthYear" th:value="${birthYear}" placeholder="Năm sinh">
+                </div>
+                <div class="form-group">
+                    <input type="number" name="deathYear" th:value="${deathYear}" placeholder="Năm mất">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="icon">🔍</i> Tìm kiếm
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>
+                    <a th:href="@{/admin/authors(keyword=${keyword}, birthYear=${birthYear}, deathYear=${deathYear}, sort='fullName')}">
+                        Họ tên
+                    </a>
+                </th>
+                <th>Năm sinh</th>
+                <th>Năm mất</th>
+                <th>Tiểu sử</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="author : ${authors.content}">
+                <td th:text="${author.fullName}"></td>
+                <td th:text="${author.birthYear}">-</td>
+                <td th:text="${author.deathYear}">-</td>
+                <td th:text="${#strings.abbreviate(author.biography, 100)}"></td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/admin/authors/{id}/edit(id=${author.id})}" class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                            <i class="icon">✏️</i>
+                        </a>
+                        <form th:action="@{/admin/authors/{id}/delete(id=${author.id})}" method="post"
+                              style="display: inline;"
+                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa tác giả này?')">
+                            <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
+                                <i class="icon">🗑</i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" th:if="${authors.totalPages > 1}">
+        <a th:if="${authors.hasPrevious()}"
+           th:href="@{/admin/authors(keyword=${keyword}, birthYear=${birthYear}, deathYear=${deathYear}, page=${authors.number - 1})}"
+           class="btn btn-sm">« Trước</a>
+
+        <span th:each="i : ${#numbers.sequence(0, authors.totalPages - 1)}">
+            <a th:if="${i != authors.number}"
+               th:href="@{/admin/authors(keyword=${keyword}, birthYear=${birthYear}, deathYear=${deathYear}, page=${i})}"
+               th:text="${i + 1}" class="btn btn-sm"></a>
+            <span th:if="${i == authors.number}" th:text="${i + 1}" class="btn btn-sm btn-primary"></span>
+        </span>
+
+        <a th:if="${authors.hasNext()}"
+           th:href="@{/admin/authors(keyword=${keyword}, birthYear=${birthYear}, deathYear=${deathYear}, page=${authors.number + 1})}"
+           class="btn btn-sm">Sau »</a>
+    </div>
+
+    <div class="table-info">
+        <p>Hiển thị <span th:text="${authors.numberOfElements}"></span> trong tổng số <span th:text="${authors.totalElements}"></span> tác giả</p>
+    </div>
+</div>
+</body>
+</html>

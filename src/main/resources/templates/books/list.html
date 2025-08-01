@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sách</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="fragments/header :: header"></div>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>Danh sách sách</h1>
+        </div>
+        
+        <div class="search-form">
+            <form th:action="@{/books}" method="get">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" name="keyword" th:value="${keyword}" 
+                               placeholder="Tìm kiếm theo tên sách, tác giả...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <select name="condition">
+                            <option value="">Tất cả tình trạng</option>
+                            <option th:each="cond : ${conditions}" 
+                                    th:value="${cond}" 
+                                    th:text="${cond.name()}"
+                                    th:selected="${cond == condition}"></option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <select name="canBorrow">
+                            <option value="">Tất cả</option>
+                            <option value="true" th:selected="${canBorrow == true}">Có thể mượn</option>
+                            <option value="false" th:selected="${canBorrow == false}">Không thể mượn</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>
+                            <a th:href="@{/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, sortBy='title', sortDir=${sortBy == 'title' and sortDir == 'asc' ? 'desc' : 'asc'})}">
+                                Tên sách
+                                <span th:if="${sortBy == 'title'}" th:class="${sortDir == 'asc' ? 'sort-asc' : 'sort-desc'}"></span>
+                            </a>
+                        </th>
+                        <th>Tác giả</th>
+                        <th>
+                            <a th:href="@{/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, sortBy='publicationYear', sortDir=${sortBy == 'publicationYear' and sortDir == 'asc' ? 'desc' : 'asc'})}">
+                                Năm xuất bản
+                            </a>
+                        </th>
+                        <th>Tình trạng</th>
+                        <th>Có thể mượn</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="book : ${books.content}">
+                        <td th:text="${book.title}"></td>
+                        <td>
+                            <span th:each="author, iterStat : ${book.authors}">
+                                <span th:text="${author.fullName}"></span>
+                                <span th:if="${!iterStat.last}">, </span>
+                            </span>
+                        </td>
+                        <td th:text="${book.publicationYear}"></td>
+                        <td th:text="${book.condition.name()}"></td>
+                        <td>
+                            <span th:if="${book.canBorrow}" class="badge badge-success">Có</span>
+                            <span th:unless="${book.canBorrow}" class="badge badge-danger">Không</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/books/{id}(id=${book.id})}" class="btn btn-sm btn-info">Xem</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="pagination" th:if="${books.totalPages > 1}">
+            <a th:if="${books.hasPrevious()}" 
+               th:href="@{/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${books.number - 1}, sortBy=${sortBy}, sortDir=${sortDir})}"
+               class="btn btn-sm">Trước</a>
+            
+            <span th:each="i : ${#numbers.sequence(0, books.totalPages - 1)}">
+                <a th:if="${i != books.number}"
+                   th:href="@{/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${i}, sortBy=${sortBy}, sortDir=${sortDir})}"
+                   th:text="${i + 1}" class="btn btn-sm"></a>
+                <span th:if="${i == books.number}" th:text="${i + 1}" class="btn btn-sm btn-primary"></span>
+            </span>
+            
+            <a th:if="${books.hasNext()}" 
+               th:href="@{/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${books.number + 1}, sortBy=${sortBy}, sortDir=${sortDir})}"
+               class="btn btn-sm">Sau</a>
+        </div>
+    </div>
+</body>
+</html>

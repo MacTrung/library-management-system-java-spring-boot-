@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${book.id != null ? 'Chỉnh sửa sách' : 'Thêm sách mới'}">Sách</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${book.id != null ? 'Chỉnh sửa sách' : 'Thêm sách mới'}">Sách</h1>
+        <a th:href="@{/admin/books}" class="btn btn-secondary">← Quay lại danh sách</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <form th:action="@{/admin/books}" th:object="${book}" method="post">
+        <input type="hidden" th:if="${book.id != null}" th:field="*{id}"/>
+
+        <div class="form-group">
+            <label for="title">Tên sách</label>
+            <input type="text" id="title" name="title" th:field="*{title}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Mô tả sách</label>
+            <textarea id="description" name="description" th:field="*{description}"></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="publicationYear">Năm xuất bản</label>
+                <input type="number" id="publicationYear" name="publicationYear" th:field="*{publicationYear}" required>
+            </div>
+            <div class="form-group">
+                <label for="edition">Lần tái bản</label>
+                <input type="number" id="edition" name="edition" th:field="*{edition}" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="condition">Tình trạng sách</label>
+                <select id="condition" name="condition" th:field="*{condition}">
+                    <option th:each="cond : ${conditions}" th:value="${cond}" th:text="${cond.displayName}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="canBorrow">Có thể cho mượn</label>
+                <select id="canBorrow" name="canBorrow" th:field="*{canBorrow}">
+                    <option value="true" th:selected="${book.canBorrow == true}">Có</option>
+                    <option value="false" th:selected="${book.canBorrow == false}">Không</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="bookshelfId">Tủ sách</label>
+            <select id="bookshelfId" name="bookshelfId" required>
+                <option th:each="shelf : ${bookshelves}"
+                        th:value="${shelf.id}"
+                        th:text="|${shelf.code} (Tầng ${shelf.floor} - Khu ${shelf.section})|"
+                        th:selected="${book.bookshelf?.id == shelf.id}">
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="authorIds">Tác giả</label>
+            <select id="authorIds" name="authorIds" multiple size="5" required>
+                <option th:each="author : ${authors}"
+                        th:value="${author.id}"
+                        th:text="${author.fullName}"
+                        th:selected="${book.authors.contains(author)}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="genreIds">Thể loại</label>
+            <select id="genreIds" name="genreIds" multiple size="5" required>
+                <option th:each="genre : ${genres}"
+                        th:value="${genre.id}"
+                        th:text="${genre.name}"
+                        th:selected="${book.genres.contains(genre)}"></option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="icon">💾</i> <span th:text="${book.id != null ? 'Cập nhật' : 'Lưu'}"></span>
+        </button>
+    </form>
+</div>
+</body>
+</html>

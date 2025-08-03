@@ -51,6 +51,13 @@ public class UserService {
     public User updateUserProfile(User user) {
         User existingUser = userRepository.findById(user.getId())
             .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Nếu không nhập password mới → giữ lại password cũ
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            user.setPassword(existingUser.getPassword());
+        } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         
         existingUser.setFirstName(user.getFirstName());
         existingUser.setLastName(user.getLastName());

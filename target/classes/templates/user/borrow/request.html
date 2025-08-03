@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Yêu cầu mượn sách</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h2>Yêu cầu mượn sách</h2>
+        <a th:href="@{/books}" class="btn btn-secondary">← Quay lại danh sách sách</a>
+    </div>
+
+    <div class="card">
+        <h3 th:text="'Sách: ' + ${book.title}"></h3>
+        <p><strong>Tác giả:</strong>
+            <span th:each="author, iterStat : ${book.authors}">
+                <span th:text="${author.fullName}"></span><span th:if="${!iterStat.last}">, </span>
+            </span>
+        </p>
+        <p><strong>Năm xuất bản:</strong> <span th:text="${book.publicationYear}"></span></p>
+        <p><strong>Tình trạng:</strong> <span th:text="${book.condition.name()}"></span></p>
+        <p><strong>Tiền cọc:</strong> <span th:text="15.000VND"></span></p>
+    </div>
+
+    <form th:action="@{/user/borrow/submit}" th:object="${record}" method="post">
+        <input type="hidden" th:field="*{borrower.id}">
+        <input type="hidden" th:field="*{borrowDate}">
+
+        <div th:each="item, iter : *{items}">
+            <input type="hidden" th:field="*{items[__${iter.index}__].book.id}" />
+
+            <div th:each="item, iter : *{items}">
+                <input type="hidden" th:field="*{items[__${iter.index}__].book.id}" />
+
+                <div class="form-group">
+                    <label>Ngày trả dự kiến</label>
+                    <p><strong th:text="${item.expectedReturnDate}"></strong></p>
+                    <input type="hidden" th:field="*{items[__${iter.index}__].expectedReturnDate}" />
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">📚 Gửi yêu cầu mượn</button>
+        <a th:href="@{/books}" class="btn btn-secondary">Quay lại</a>
+    </form>
+</div>
+
+</body>
+</html>

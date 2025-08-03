@@ -86,21 +86,32 @@ public class AdminBookController {
     public String saveBook(@ModelAttribute Book book, 
                           @RequestParam(required = false) Long[] authorIds,
                           @RequestParam(required = false) Long[] genreIds,
+                           @RequestParam Long bookshelfId,
                           RedirectAttributes redirectAttributes) {
         try {
-            // Set authors and genres
+            if (book.getId() != null) {
+                book.getAuthors().clear();
+                book.getGenres().clear();
+            }
+
+            // Set bookshelf
+            bookshelfService.findById(bookshelfId)
+                    .ifPresent(book::setBookshelf);
+
+            // Set authors
             if (authorIds != null) {
                 for (Long authorId : authorIds) {
                     authorService.findById(authorId).ifPresent(book.getAuthors()::add);
                 }
             }
-            
+
+            // Set genres
             if (genreIds != null) {
                 for (Long genreId : genreIds) {
                     genreService.findById(genreId).ifPresent(book.getGenres()::add);
                 }
             }
-            
+
             if (book.getId() == null) {
                 bookService.createBook(book);
                 redirectAttributes.addFlashAttribute("success", "Thêm sách thành công!");
@@ -108,8 +119,9 @@ public class AdminBookController {
                 bookService.updateBook(book);
                 redirectAttributes.addFlashAttribute("success", "Cập nhật sách thành công!");
             }
-            
+
             return "redirect:/admin/books";
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
             return "redirect:/admin/books";

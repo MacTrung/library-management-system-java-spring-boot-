@@ -4,7 +4,23 @@
     <meta charset="UTF-8">
     <title th:text="${book.id != null ? 'Chỉnh sửa sách' : 'Thêm sách mới'}">Sách</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 </head>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#authorIds').select2({
+            placeholder: "Chọn tác giả (có thể chọn nhiều)",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
 <body>
 <div th:replace="fragments/header :: header"></div>
 
@@ -17,7 +33,7 @@
     <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
     <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
-    <form th:action="@{/admin/books}" th:object="${book}" method="post">
+    <form th:action="@{/admin/books}" th:object="${book}" method="post" >
         <input type="hidden" th:if="${book.id != null}" th:field="*{id}"/>
 
         <div class="form-group">
@@ -71,23 +87,25 @@
 
         <div class="form-group">
             <label for="authorIds">Tác giả</label>
-            <select id="authorIds" name="authorIds" multiple size="5" required>
+            <select id="authorIds" name="authorIds" multiple="multiple" required>
                 <option th:each="author : ${authors}"
                         th:value="${author.id}"
                         th:text="${author.fullName}"
-                        th:selected="${book.authors.contains(author)}"></option>
+                        th:selected="${book.authors.contains(author)}">
+                </option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="genreIds">Thể loại</label>
-            <select id="genreIds" name="genreIds" multiple size="5" required>
-                <option th:each="genre : ${genres}"
-                        th:value="${genre.id}"
-                        th:text="${genre.name}"
-                        th:selected="${book.genres.contains(genre)}"></option>
-            </select>
+            <label>Thể loại</label>
+            <div class="genre-button-group">
+                <label th:each="genre : ${genres}">
+                    <input type="checkbox" name="genreIds" th:value="${genre.id}" th:checked="${book.genres.contains(genre)}"/>
+                    <span th:text="${genre.name}">Thể loại</span>
+                </label>
+            </div>
         </div>
+
 
         <button type="submit" class="btn btn-success">
             <i class="icon">💾</i> <span th:text="${book.id != null ? 'Cập nhật' : 'Lưu'}"></span>

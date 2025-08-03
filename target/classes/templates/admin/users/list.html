@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý người dùng</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Quản lý người dùng</h1>
+        <a th:href="@{/admin/users/new}" class="btn btn-primary">
+            ➕ Thêm người dùng
+        </a>
+    </div>
+
+    <form th:action="@{/admin/users}" method="get" class="search-form">
+        <div class="form-row">
+            <div class="form-group" style="flex: 1; min-width: 250px;">
+                <input type="search" name="keyword" th:value="${keyword}" class="form-control"
+                       placeholder="🔎 Tìm theo tên, email, username, SĐT...">
+            </div>
+            <div class="form-group" style="min-width: 180px;">
+                <select name="status" class="form-control">
+                    <option value="">Tất cả trạng thái</option>
+                    <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == status}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="icon">🔍</i> Tìm kiếm
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>Tài khoản</th>
+            <th>Họ tên</th>
+            <th>Email</th>
+            <th>Trạng thái</th>
+            <th>Vai trò</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users.content}">
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.firstName + ' ' + user.lastName}"></td>
+            <td th:text="${user.email}"></td>
+            <td>
+                <span th:text="${user.status}" th:class="${user.status == 'ACTIVE' ? 'badge badge-success' : 'badge badge-danger'}"></span>
+            </td>
+            <td th:text="${user.role}"></td>
+            <td>
+                <a th:href="@{'/admin/users/' + ${user.id} + '/edit'}" class="btn btn-sm btn-warning">✏️</a>
+                <form th:action="@{'/admin/users/' + ${user.id} + '/toggle-status'}" method="post" style="display:inline">
+                    <button type="submit" class="btn btn-sm btn-secondary">🔄</button>
+                </form>
+                <a th:href="@{'/admin/users/' + ${user.id} + '/borrow-records'}" class="btn btn-sm btn-info" title="Đơn mượn">
+                    📚
+                </a>
+                <form th:action="@{'/admin/users/' + ${user.id} + '/delete'}" method="post" style="display:inline"
+                      onsubmit="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                    <button type="submit" class="btn btn-sm btn-danger">🗑</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

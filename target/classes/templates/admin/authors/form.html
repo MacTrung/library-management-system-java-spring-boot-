@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${author.id != null ? 'Chỉnh sửa tác giả' : 'Thêm tác giả'}">Tác giả</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${author.id != null ? 'Chỉnh sửa tác giả' : 'Thêm tác giả'}">Tác giả</h1>
+        <a th:href="@{/admin/authors}" class="btn btn-secondary">← Quay lại danh sách</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <form th:action="@{/admin/authors}" th:object="${author}" method="post">
+        <input type="hidden" th:if="${author.id != null}" th:field="*{id}"/>
+
+        <div class="form-group">
+            <label for="fullName">Họ và tên</label>
+            <input type="text" id="fullName" th:field="*{fullName}" required>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="birthYear">Năm sinh</label>
+                <input type="number" id="birthYear" th:field="*{birthYear}">
+            </div>
+            <div class="form-group">
+                <label for="deathYear">Năm mất</label>
+                <input type="number" id="deathYear" th:field="*{deathYear}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="biography">Tiểu sử</label>
+            <textarea id="biography" th:field="*{biography}" rows="5"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="icon">💾</i>
+            <span th:text="${author.id != null ? 'Cập nhật' : 'Lưu'}"></span>
+        </button>
+    </form>
+</div>
+</body>
+</html>

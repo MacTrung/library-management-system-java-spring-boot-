@@ -58,19 +58,6 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="dashboard-charts">
-                <div class="chart-container">
-                    <h3>Thống kê mượn sách theo tháng</h3>
-                    <canvas id="borrowChart"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <h3>Phân bố theo thể loại</h3>
-                    <canvas id="genreChart"></canvas>
-                </div>
-            </div>
-            
             <div class="dashboard-actions">
                 <h2>Quản lý hệ thống</h2>
                 <div class="action-grid">
@@ -81,7 +68,7 @@
                             <p>Thêm, sửa, xóa thông tin sách trong thư viện</p>
                         </div>
                     </a>
-                    
+
                     <a th:href="@{/admin/authors}" class="action-card">
                         <div class="action-icon">✍️</div>
                         <div class="action-content">
@@ -89,7 +76,7 @@
                             <p>Quản lý thông tin tác giả và tác phẩm</p>
                         </div>
                     </a>
-                    
+
                     <a th:href="@{/admin/borrow-records}" class="action-card">
                         <div class="action-icon">📋</div>
                         <div class="action-content">
@@ -97,7 +84,7 @@
                             <p>Theo dõi và xử lý các đơn mượn sách</p>
                         </div>
                     </a>
-                    
+
                     <a th:href="@{/admin/users}" class="action-card">
                         <div class="action-icon">👥</div>
                         <div class="action-content">
@@ -105,7 +92,7 @@
                             <p>Quản lý tài khoản và thông tin người dùng</p>
                         </div>
                     </a>
-                    
+
                     <a th:href="@{/admin/extension-requests}" class="action-card">
                         <div class="action-icon">⏰</div>
                         <div class="action-content">
@@ -113,7 +100,7 @@
                             <p>Xử lý các yêu cầu gia hạn từ người dùng</p>
                         </div>
                     </a>
-                    
+
                     <a th:href="@{/admin/bookshelves}" class="action-card">
                         <div class="action-icon">🗄️</div>
                         <div class="action-content">
@@ -123,6 +110,28 @@
                     </a>
                 </div>
             </div>
+
+            <br>
+            <br>
+
+            <h2>Thống Kê</h2>
+            <br>
+            <div>
+                <div class="dashboard-charts">
+                    <div class="chart-container">
+                        <h3>Thống kê mượn sách theo tháng</h3>
+                        <canvas id="borrowChart"></canvas>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>Phân bố theo thể loại</h3>
+                        <canvas id="genreChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            
+
         </div>
     </div>
     

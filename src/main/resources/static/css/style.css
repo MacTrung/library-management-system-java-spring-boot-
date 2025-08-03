@@ -724,6 +724,36 @@ body {
   animation: slideInRight 0.3s ease;
 }
 
+
+.genre-button-group label {
+  display: inline-block;
+  margin: 5px 5px 0 0;
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid #aaa;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.genre-button-group input[type="checkbox"] {
+  display: none;
+}
+
+.genre-button-group input[type="checkbox"]:checked + span {
+  background-color: #4CAF50;
+  color: white;
+  border-color: #4CAF50;
+}
+
+.genre-button-group span {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 15px;
+  transition: all 0.3s;
+}
+
+
 @keyframes slideInRight {
   from {
     transform: translateX(100%);

@@ -12,7 +12,8 @@
     <div class="container">
         <div class="dashboard">
             <h1>Dashboard Người dùng</h1>
-            <p>Chào mừng, <span th:text="${user.fullName}"></span>!</p>
+            <br>
+            <h3>Chào mừng, <span th:text="${user.fullName}"></span>!</h3>
             
             <div class="dashboard-stats">
                 <div class="stat-card">
@@ -39,7 +40,7 @@
                         <p>Tìm kiếm và xem thông tin sách</p>
                     </a>
                     
-                    <a href="/user/borrow-records" class="action-card">
+                    <a href="/user/borrow" class="action-card">
                         <h3>Lịch sử mượn sách</h3>
                         <p>Xem các đơn mượn của bạn</p>
                     </a>

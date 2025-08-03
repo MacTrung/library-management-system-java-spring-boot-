@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch sử mượn sách</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Lịch sử mượn sách</h1>
+    </div>
+
+    <div th:if="${hasOverdueBooks}" class="alert alert-danger">
+        Bạn đang có sách quá hạn chưa trả. Vui lòng trả sách trước khi mượn thêm!
+    </div>
+    <div th:if="${hasDueSoonBooks}" class="alert alert-warning">
+        Bạn có sách sắp đến hạn trả. Hãy kiểm tra lịch trả sách của bạn!
+    </div>
+
+    <form method="get" th:action="@{/user/borrow}">
+        <div class="form-row">
+            <div class="form-group">
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm kiếm theo mã đơn, tên sách...">
+            </div>
+            <div class="form-group">
+                <label for="fromDate">Từ ngày:</label>
+                <input type="date" id="fromDate" name="fromDate" th:value="${fromDate}">
+            </div>
+            <div class="form-group">
+                <label for="toDate">Đến ngày:</label>
+                <input type="date" id="toDate" name="toDate" th:value="${toDate}">
+            </div>
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </div>
+    </form>
+
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Ngày mượn</th>
+            <th>Tiền cọc</th>
+            <th>Sách</th>
+            <th>Trạng thái trả</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="record : ${records.content}">
+            <td th:text="${record.borrowCode}"></td>
+            <td th:text="${record.borrowDate}"></td>
+            <td th:text="${#numbers.formatDecimal(record.deposit, 1, 'COMMA', 2, 'POINT')} + ' đ'"></td>
+
+            <td>
+                <ul>
+                    <li th:each="item : ${record.items}">
+                        <span th:text="${item.book.title}"></span>
+                    </li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li th:each="item : ${record.items}">
+                        <span th:text="${item.returnStatus}"></span>
+                    </li>
+                </ul>
+            </td>
+            <td>
+                <a th:href="@{/user/borrow/{id}(id=${record.id})}" class="btn btn-sm btn-info">Xem</a>
+            </td>
+        </tr>
+        <tr th:if="${records.totalElements == 0}">
+            <td colspan="6">Không tìm thấy đơn mượn nào.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination" th:if="${records.totalPages > 1}">
+        <a th:if="${records.hasPrevious()}"
+           th:href="@{/user/borrow(page=${records.number - 1}, keyword=${keyword}, fromDate=${fromDate}, toDate=${toDate})}" class="btn btn-sm">Trước</a>
+
+        <span th:each="i : ${#numbers.sequence(0, records.totalPages - 1)}">
+            <a th:if="${i != records.number}"
+               th:href="@{/user/borrow(page=${i}, keyword=${keyword}, fromDate=${fromDate}, toDate=${toDate})}"
+               th:text="${i + 1}" class="btn btn-sm"></a>
+            <span th:if="${i == records.number}" th:text="${i + 1}" class="btn btn-sm btn-primary"></span>
+        </span>
+
+        <a th:if="${records.hasNext()}"
+           th:href="@{/user/borrow(page=${records.number + 1}, keyword=${keyword}, fromDate=${fromDate}, toDate=${toDate})}" class="btn btn-sm">Sau</a>
+    </div>
+</div>
+
+
+</body>
+</html>

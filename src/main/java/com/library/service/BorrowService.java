@@ -46,9 +46,28 @@ public class BorrowService {
         return borrowRecordRepository.findOverdueRecords(LocalDate.now());
     }
     
+//    public BorrowRecord createBorrowRecord(BorrowRecord borrowRecord) {
+//        borrowRecord.setBorrowCode("BR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+//        borrowRecord.setCreatedBy(getCurrentUsername());
+//        return borrowRecordRepository.save(borrowRecord);
+//    }
     public BorrowRecord createBorrowRecord(BorrowRecord borrowRecord) {
         borrowRecord.setBorrowCode("BR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         borrowRecord.setCreatedBy(getCurrentUsername());
+
+        for (BorrowRecordItem item : borrowRecord.getItems()) {
+            Book book = item.getBook();
+            if (book != null && book.getId() != null) {
+                Book fullBook = bookService.findById(book.getId())
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy sách với ID: " + book.getId()));
+
+                fullBook.setCanBorrow(false);
+                bookService.updateBook(fullBook);
+
+                item.setBook(fullBook);
+            }
+        }
+
         return borrowRecordRepository.save(borrowRecord);
     }
     
@@ -61,12 +80,12 @@ public class BorrowService {
         borrowRecordRepository.deleteById(id);
     }
     
-    public boolean canUserBorrow(User user) {
-        if (!user.isActive()) return false;
-        
-        List<BorrowRecord> userRecords = findByBorrower(user);
-        return userRecords.stream().noneMatch(BorrowRecord::hasOverdueBooks);
-    }
+//    public boolean canUserBorrow(User user) {
+//        if (!user.isActive()) return false;
+//
+//        List<BorrowRecord> userRecords = findByBorrower(user);
+//        return userRecords.stream().noneMatch(BorrowRecord::hasOverdueBooks);
+//    }
     
     public void returnBook(Long borrowRecordId, Long bookId) {
         BorrowRecord record = borrowRecordRepository.findById(borrowRecordId)
@@ -96,4 +115,58 @@ public class BorrowService {
             return "system";
         }
     }
+
+
+    public boolean canBorrowBook(Book book) {
+        return book != null && Boolean.TRUE.equals(book.getCanBorrow()) && book.isAvailable();
+    }
+
+    public boolean hasDueSoonBooks(User user, int daysThreshold) {
+        List<BorrowRecord> records = findByBorrower(user);
+        LocalDate today = LocalDate.now();
+
+        return records.stream()
+                .flatMap(r -> r.getItems().stream())
+                .anyMatch(item ->
+                        item.getReturnDate() == null &&
+                                item.getExpectedReturnDate() != null &&
+                                !item.getExpectedReturnDate().isBefore(today) &&
+                                item.getExpectedReturnDate().minusDays(daysThreshold).isBefore(today)
+                );
+    }
+
+    public boolean hasUnreturnedBooks(User user) {
+        return findByBorrower(user).stream()
+                .flatMap(r -> r.getItems().stream())
+                .anyMatch(item -> item.getReturnDate() == null);
+    }
+
+    public boolean hasOverdueBooks(User user) {
+        LocalDate today = LocalDate.now();
+        return findByBorrower(user).stream()
+                .flatMap(r -> r.getItems().stream())
+                .anyMatch(item ->
+                        item.getReturnDate() == null &&
+                                item.getExpectedReturnDate() != null &&
+                                item.getExpectedReturnDate().isBefore(today)
+                );
+    }
+
+    public boolean canUserBorrow(User user) {
+        if (user == null || !user.isActive()) return false;
+
+        return !hasUnreturnedBooks(user) && !hasOverdueBooks(user);
+    }
+
+    public boolean isBookCurrentlyBorrowedByUser(User user, Book book) {
+        return findByBorrower(user).stream()
+                .flatMap(record -> record.getItems().stream())
+                .anyMatch(item ->
+                        item.getBook().getId().equals(book.getId()) &&
+                                item.getReturnDate() == null
+                );
+    }
+
+
+
 }

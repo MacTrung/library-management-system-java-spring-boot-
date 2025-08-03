@@ -22,13 +22,13 @@ public class DataInitializer implements CommandLineRunner {
         if (userRepository.findByUsername("admin").isEmpty()) {
             userService.createDefaultAdmin();
             System.out.println("=".repeat(50));
-            System.out.println("🎉 LIBRARY MANAGEMENT SYSTEM INITIALIZED");
+            System.out.println("LIBRARY MANAGEMENT SYSTEM INITIALIZED");
             System.out.println("=".repeat(50));
-            System.out.println("📚 Default admin user created:");
-            System.out.println("   Username: admin");
-            System.out.println("   Password: admin123");
+            System.out.println("Default admin user created:");
+            System.out.println("   Username: admin2");
+            System.out.println("   Password: 123456");
             System.out.println("=".repeat(50));
-            System.out.println("🌐 Access the application at: http://localhost:8080");
+            System.out.println("Access the application at: http://localhost:8080");
             System.out.println("=".repeat(50));
         }
     }

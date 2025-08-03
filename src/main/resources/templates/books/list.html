@@ -8,6 +8,19 @@
 </head>
 <body>
     <div th:replace="fragments/header :: header"></div>
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Thông báo lỗi -->
+    <script th:inline="javascript" th:if="${error != null}">
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: [[${error}]]  ,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Đóng'
+        });
+    </script>
     
     <div class="container">
         <div class="page-header">
@@ -83,6 +96,9 @@
                         </td>
                         <td>
                             <a th:href="@{/books/{id}(id=${book.id})}" class="btn btn-sm btn-info">Xem</a>
+                            <a th:href="@{/user/borrow/request/{id}(id=${book.id})}" class="btn btn-sm btn-success">Mượn</a>
+
+
                         </td>
                     </tr>
                 </tbody>
@@ -106,5 +122,8 @@
                class="btn btn-sm">Sau</a>
         </div>
     </div>
+
+
+
 </body>
 </html>

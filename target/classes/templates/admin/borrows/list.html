@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đơn mượn</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Quản lý đơn mượn</h1>
+        <a th:href="@{/admin/borrows/create}" class="btn btn-primary">
+            <i class="icon">➕</i> Tạo đơn mượn
+        </a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success">
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-error">
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="search-form">
+        <form th:action="@{/admin/borrows}" method="get">
+            <div class="form-row">
+                <div class="form-group">
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm kiếm mã, tên, sách...">
+                </div>
+
+                <div class="form-group">
+                    <select name="returnStatus">
+                        <option value="">-- Trạng thái --</option>
+                        <option th:each="s : ${statuses}"
+                                th:value="${s}"
+                                th:text="${s}"
+                                th:selected="${s == returnStatus}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Từ ngày</label>
+                    <input type="date" name="fromDate" th:value="${fromDate}">
+                </div>
+                <div class="form-group">
+                    <label>Đến ngày</label>
+                    <input type="date" name="toDate" th:value="${toDate}">
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="icon">🔍</i> Tìm kiếm
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Người mượn</th>
+                <th>Ngày mượn</th>
+                <th>Trạng thái</th>
+                <th>Tiền cọc</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="record : ${records.content}">
+                <td th:text="${record.borrowCode}"></td>
+                <td th:text="${record.borrower.firstName + ' ' + record.borrower.lastName}"></td>
+                <td th:text="${#temporals.format(record.borrowDate, 'dd/MM/yyyy')}"></td>
+                <td>
+                    <span th:each="item : ${record.items}"
+                          class="badge"
+                          th:classappend="' badge-' + (${item.returnStatus.name()} == 'NOT_RETURNED' ? 'warning' :
+                                                           (${item.returnStatus.name()} == 'RETURNED_LATE' ? 'danger' :
+                                                           (${item.returnStatus.name()} == 'DAMAGED' ? 'dark' : 'success')))"
+                          th:text="${item.returnStatus}">Chưa trả</span>
+                </td>
+                <td th:text="${#numbers.formatDecimal(record.deposit, 0, 'COMMA', 2, 'POINT')} + ' VND'"></td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/admin/borrows/{id}(id=${record.id})}" class="btn btn-sm btn-info" title="Xem chi tiết">
+                            <i class="icon">👁</i>
+                        </a>
+                        <form th:action="@{/admin/borrows/{id}/delete(id=${record.id})}" method="post"
+                              style="display: inline;"
+                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn mượn này?')">
+                            <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
+                                <i class="icon">🗑</i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" th:if="${records.totalPages > 1}">
+        <a th:if="${records.hasPrevious()}"
+           th:href="@{/admin/borrows(page=${records.number - 1})}"
+           class="btn btn-sm">« Trước</a>
+
+        <span th:each="i : ${#numbers.sequence(0, records.totalPages - 1)}">
+            <a th:if="${i != records.number}"
+               th:href="@{/admin/borrows(page=${i})}"
+               th:text="${i + 1}" class="btn btn-sm"></a>
+            <span th:if="${i == records.number}" th:text="${i + 1}" class="btn btn-sm btn-primary"></span>
+        </span>
+
+        <a th:if="${records.hasNext()}"
+           th:href="@{/admin/borrows(page=${records.number + 1})}"
+           class="btn btn-sm">Sau »</a>
+    </div>
+
+    <div class="table-info">
+        <p>Hiển thị <span th:text="${records.numberOfElements}"></span> trong tổng số <span th:text="${records.totalElements}"></span> đơn mượn</p>
+    </div>
+</div>
+</body>
+</html>

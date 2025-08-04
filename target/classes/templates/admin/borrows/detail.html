@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết đơn mượn</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <h1>Chi tiết đơn mượn</h1>
+
+    <div class="detail-card">
+        <p><strong>Mã đơn:</strong> <span th:text="${record.borrowCode}"></span></p>
+        <p><strong>Người mượn:</strong>
+            <span th:text="${record.borrower.firstName + ' ' + record.borrower.lastName}"></span>
+        </p>
+        <p><strong>Ngày mượn:</strong> <span th:text="${#temporals.format(record.borrowDate, 'dd/MM/yyyy')}"></span></p>
+        <p><strong>Tiền cọc:</strong> <span th:text="${#numbers.formatDecimal(record.deposit, 0, 'COMMA', 2, 'POINT')} + ' VND'"></span></p>
+    </div>
+
+    <h3>Danh sách sách mượn</h3>
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>Tên sách</th>
+            <th>Ngày trả dự kiến</th>
+            <th>Ngày đã trả</th>
+            <th>Trạng thái trả</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${record.items}">
+            <td th:text="${item.book.title}"></td>
+            <td th:text="${#temporals.format(item.expectedReturnDate, 'dd/MM/yyyy')}"></td>
+            <td th:text="${item.returnDate != null ? #temporals.format(item.returnDate, 'dd/MM/yyyy') : 'Chưa trả'}"></td>
+            <td>
+                    <span class="badge"
+                          th:classappend="' badge-' + (${item.returnStatus.name()} == 'NOT_RETURNED' ? 'warning' :
+                                                           (${item.returnStatus.name()} == 'RETURNED_LATE' ? 'danger' :
+                                                           (${item.returnStatus.name()} == 'DAMAGED' ? 'dark' : 'success')))"
+                          th:text="${item.returnStatus}">Chưa trả</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/admin/borrows}" class="btn btn-secondary">← Quay lại danh sách</a>
+</div>
+</body>
+</html>

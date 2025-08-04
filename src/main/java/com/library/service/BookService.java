@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,7 +27,13 @@ public class BookService {
     public Page<Book> findAvailableBooks(Pageable pageable) {
         return bookRepository.findAvailableBooks(pageable);
     }
-    
+
+    public List<Book> findAllAvailableBooks() {
+        return bookRepository.findAvailableBooks(Pageable.unpaged()).getContent();
+    }
+
+
+
     public Optional<Book> findById(Long id) {
         return bookRepository.findById(id);
     }

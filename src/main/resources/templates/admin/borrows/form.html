@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm đơn mượn</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- jQuery + Select2 JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#bookIds').select2({
+                placeholder: "Chọn sách (có thể chọn nhiều)",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    </script>
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h2>📄 Tạo đơn mượn mới</h2>
+        <a th:href="@{/admin/borrows}" class="btn btn-secondary">← Quay lại</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <form th:action="@{/admin/borrows/save}" th:object="${record}" method="post">
+        <input type="hidden" th:field="*{id}"/>
+
+        <div class="form-group">
+            <label>Người mượn</label>
+            <select class="form-control" th:field="*{borrower.id}" required>
+                <option value="" disabled selected>-- Chọn người mượn --</option>
+                <option th:each="user : ${users}"
+                        th:value="${user.id}"
+                        th:text="${user.firstName + ' ' + user.lastName + ' (' + user.username + ')'}">
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Ngày mượn</label>
+            <input type="date" class="form-control" th:field="*{borrowDate}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Tiền cọc</label>
+            <input type="number" class="form-control" th:field="*{deposit}" min="0" step="1000" required>
+        </div>
+
+        <!-- ✅ PHẦN CHỈNH SỬA: CHỌN NHIỀU SÁCH BẰNG SELECT2 -->
+        <div class="form-group">
+            <label for="bookIds">Sách mượn</label>
+            <select id="bookIds" name="bookIds" multiple="multiple" class="form-control" required>
+                <option th:each="book : ${books}"
+                        th:value="${book.id}"
+                        th:text="${book.title}"
+                        th:selected="${record.bookIds != null and record.bookIds.contains(book.id)}">
+                </option>
+            </select>
+        </div>
+        <!-- ✅ HẾT PHẦN CHỈNH SỬA -->
+
+        <div class="form-group text-right">
+            <button type="submit" class="btn btn-success">💾 Lưu đơn mượn</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -72,7 +72,7 @@ public class AdminUserController {
                 userService.createUser(user);
                 redirectAttributes.addFlashAttribute("success", "Thêm người dùng thành công!");
             } else {
-                userService.updateUser(user);
+                userService.updateUserProfile(user);
                 redirectAttributes.addFlashAttribute("success", "Cập nhật người dùng thành công!");
             }
             return "redirect:/admin/users";
@@ -93,7 +93,7 @@ public class AdminUserController {
         return "redirect:/admin/users";
     }
 
-    @GetMapping("/{id}/borrow-records")
+    @GetMapping("/{id}/borrow")
     public String viewUserBorrowRecords(@PathVariable Long id, Model model) {
         User user = userService.findById(id)
             .orElseThrow(() -> new RuntimeException("User not found"));
@@ -103,7 +103,7 @@ public class AdminUserController {
         model.addAttribute("user", user);
         model.addAttribute("borrowRecords", borrowService.findByBorrowerAndDateRange(user, fromDate));
         
-        return "admin/users/borrow-records";
+        return "borrow";
     }
 
     @PostMapping("/{id}/delete")

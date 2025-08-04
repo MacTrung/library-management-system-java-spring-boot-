@@ -8,7 +8,7 @@
 </head>
 <body>
     <div th:replace="fragments/header :: header"></div>
-    
+
     <div class="container">
         <div class="page-header">
             <h1>Quản lý sách</h1>
@@ -16,33 +16,33 @@
                 <i class="icon">➕</i> Thêm sách mới
             </a>
         </div>
-        
+
         <div th:if="${success}" class="alert alert-success">
             <span th:text="${success}"></span>
         </div>
-        
+
         <div th:if="${error}" class="alert alert-error">
             <span th:text="${error}"></span>
         </div>
-        
+
         <div class="search-form">
             <form th:action="@{/admin/books}" method="get">
                 <div class="form-row">
                     <div class="form-group">
-                        <input type="text" name="keyword" th:value="${keyword}" 
+                        <input type="text" name="keyword" th:value="${keyword}"
                                placeholder="Tìm kiếm theo tên sách, tác giả, thể loại...">
                     </div>
-                    
+
                     <div class="form-group">
                         <select name="condition">
                             <option value="">Tất cả tình trạng</option>
-                            <option th:each="cond : ${conditions}" 
-                                    th:value="${cond}" 
+                            <option th:each="cond : ${conditions}"
+                                    th:value="${cond}"
                                     th:text="${cond.displayName}"
                                     th:selected="${cond == condition}"></option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
                         <select name="canBorrow">
                             <option value="">Tất cả</option>
@@ -50,14 +50,14 @@
                             <option value="false" th:selected="${canBorrow == false}">Không thể mượn</option>
                         </select>
                     </div>
-                    
+
                     <button type="submit" class="btn btn-primary">
                         <i class="icon">🔍</i> Tìm kiếm
                     </button>
                 </div>
             </form>
         </div>
-        
+
         <div class="table-container">
             <table class="data-table">
                 <thead>
@@ -85,14 +85,14 @@
                     <tr th:each="book : ${books.content}">
                         <td>
                             <div class="book-title" th:text="${book.title}"></div>
-                            <div class="book-description" th:if="${book.description}" 
+                            <div class="book-description" th:if="${book.description}"
                                  th:text="${#strings.abbreviate(book.description, 100)}"></div>
                         </td>
                         <td th:text="${book.authorsString}"></td>
                         <td th:text="${book.genresString}"></td>
                         <td th:text="${book.publicationYear}"></td>
                         <td>
-                            <span class="badge" 
+                            <span class="badge"
                                   th:classappend="${book.condition.name() == 'NEW' ? 'badge-success' : (book.condition.name() == 'OLD' ? 'badge-warning' : 'badge-danger')}"
                                   th:text="${book.condition.displayName}"></span>
                         </td>
@@ -109,8 +109,8 @@
                                 <a th:href="@{/admin/books/{id}/edit(id=${book.id})}" class="btn btn-sm btn-warning" title="Chỉnh sửa">
                                     <i class="icon">✏️</i>
                                 </a>
-                                <form th:action="@{/admin/books/{id}/delete(id=${book.id})}" method="post" 
-                                      style="display: inline;" 
+                                <form th:action="@{/admin/books/{id}/delete(id=${book.id})}" method="post"
+                                      style="display: inline;"
                                       onsubmit="return confirm('Bạn có chắc chắn muốn xóa sách này?')">
                                     <button type="submit" class="btn btn-sm btn-danger" title="Xóa">
                                         <i class="icon">🗑</i>
@@ -122,24 +122,24 @@
                 </tbody>
             </table>
         </div>
-        
+
         <div class="pagination" th:if="${books.totalPages > 1}">
-            <a th:if="${books.hasPrevious()}" 
+            <a th:if="${books.hasPrevious()}"
                th:href="@{/admin/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${books.number - 1}, sortBy=${sortBy}, sortDir=${sortDir})}"
                class="btn btn-sm">« Trước</a>
-            
+
             <span th:each="i : ${#numbers.sequence(0, books.totalPages - 1)}">
                 <a th:if="${i != books.number}"
                    th:href="@{/admin/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${i}, sortBy=${sortBy}, sortDir=${sortDir})}"
                    th:text="${i + 1}" class="btn btn-sm"></a>
                 <span th:if="${i == books.number}" th:text="${i + 1}" class="btn btn-sm btn-primary"></span>
             </span>
-            
-            <a th:if="${books.hasNext()}" 
+
+            <a th:if="${books.hasNext()}"
                th:href="@{/admin/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${books.number + 1}, sortBy=${sortBy}, sortDir=${sortDir})}"
                class="btn btn-sm">Sau »</a>
         </div>
-        
+
         <div class="table-info">
             <p>Hiển thị <span th:text="${books.numberOfElements}"></span> trong tổng số <span th:text="${books.totalElements}"></span> sách</p>
         </div>

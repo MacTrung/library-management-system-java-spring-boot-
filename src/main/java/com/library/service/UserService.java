@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,7 +25,12 @@ public class UserService {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
+
     public Page<User> findUsers(String keyword, UserStatus status, Pageable pageable) {
         return userRepository.findByKeywordAndStatus(keyword, status, pageable);
     }
@@ -42,8 +48,9 @@ public class UserService {
         user.setCreatedBy(getCurrentUsername());
         return userRepository.save(user);
     }
-    
+
     public User updateUser(User user) {
+
         user.setUpdatedBy(getCurrentUsername());
         return userRepository.save(user);
     }
@@ -56,7 +63,7 @@ public class UserService {
         if (user.getPassword() == null || user.getPassword().isBlank()) {
             user.setPassword(existingUser.getPassword());
         } else {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         
         existingUser.setFirstName(user.getFirstName());

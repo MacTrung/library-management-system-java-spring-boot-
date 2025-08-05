@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tạo yêu cầu gia hạn</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <h2>Tạo yêu cầu gia hạn</h2>
+
+    <!-- Cảnh báo nếu tài khoản không hoạt động -->
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
+    <form th:action="@{/user/extensions/create}" th:object="${extensionRequest}" method="post">
+        <!-- Chọn sách theo từng đơn mượn -->
+        <div class="form-group">
+            <label>Chọn sách cần gia hạn:</label>
+            <select th:field="*{book}" required>
+                <option value="">-- Chọn sách --</option>
+                <optgroup th:each="br : ${borrowRecords}" th:label="'Đơn ' + ${br.borrowCode}">
+                    <option th:each="item : ${br.items}"
+                            th:value="${item.book.id}"
+                            th:text="${item.book.title}"
+                            th:data-borrow-id="${br.id}">
+                    </option>
+                </optgroup>
+            </select>
+            <input type="hidden" name="borrowRecordId" id="borrowRecordId" />
+        </div>
+
+        <!-- Nhập lý do -->
+        <div class="form-group">
+            <label>Lý do gia hạn:</label>
+            <textarea th:field="*{reason}" rows="4" cols="50" required></textarea>
+        </div>
+
+        <!-- Nút gửi -->
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
+            <a th:href="@{/user/extensions}" class="btn btn-secondary">← Quay lại danh sách</a>
+        </div>
+    </form>
+
+    <!-- Script lấy data-borrow-id để điền vào input ẩn -->
+    <script>
+        document.querySelector('select[name="book"]').addEventListener('change', function () {
+            const selectedOption = this.selectedOptions[0];
+            const borrowId = selectedOption.getAttribute('data-borrow-id');
+            document.getElementById('borrowRecordId').value = borrowId;
+        });
+    </script>
+
+</div>
+
+</body>
+</html>

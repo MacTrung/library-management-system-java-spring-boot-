@@ -2,78 +2,108 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Thêm đơn mượn</title>
+    <title th:text="${record.id != null ? 'Chỉnh sửa đơn mượn' : 'Tạo đơn mượn'}">Đơn mượn</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-    <!-- jQuery + Select2 JS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script>
-        $(document).ready(function () {
-            $('#bookIds').select2({
-                placeholder: "Chọn sách (có thể chọn nhiều)",
-                allowClear: true,
-                width: '100%'
-            });
-        });
-    </script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
 
 <div class="container">
     <div class="page-header">
-        <h2>📄 Tạo đơn mượn mới</h2>
-        <a th:href="@{/admin/borrows}" class="btn btn-secondary">← Quay lại</a>
+        <h1 th:text="${record.id != null ? 'Chỉnh sửa đơn mượn' : 'Tạo đơn mượn'}">Đơn mượn</h1>
+        <a th:href="@{/admin/borrows}" class="btn btn-secondary">← Quay lại danh sách</a>
     </div>
 
     <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
     <form th:action="@{/admin/borrows/save}" th:object="${record}" method="post">
-        <input type="hidden" th:field="*{id}"/>
+        <input type="hidden" th:if="${record.id != null}" th:field="*{id}"/>
 
+        <!-- Người mượn -->
         <div class="form-group">
-            <label>Người mượn</label>
-            <select class="form-control" th:field="*{borrower.id}" required>
-                <option value="" disabled selected>-- Chọn người mượn --</option>
-                <option th:each="user : ${users}"
-                        th:value="${user.id}"
-                        th:text="${user.firstName + ' ' + user.lastName + ' (' + user.username + ')'}">
-                </option>
+            <label for="borrower">Người mượn</label>
+            <select id="borrower" th:field="*{borrower.id}" required>
+                <option value="">-- Chọn người mượn --</option>
+                <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.fullName}"></option>
             </select>
         </div>
 
-        <div class="form-group">
-            <label>Ngày mượn</label>
-            <input type="date" class="form-control" th:field="*{borrowDate}" required>
+        <!-- Ngày mượn và tiền đặt cọc -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="borrowDate">Ngày mượn</label>
+                <input type="date" id="borrowDate" th:field="*{borrowDate}" required>
+            </div>
+            <div class="form-group">
+                <label for="deposit">Tiền đặt cọc</label>
+                <input type="number" id="deposit" th:field="*{deposit}" min="0" step="1000" required>
+            </div>
         </div>
 
+        <!-- Chọn sách -->
         <div class="form-group">
-            <label>Tiền cọc</label>
-            <input type="number" class="form-control" th:field="*{deposit}" min="0" step="1000" required>
-        </div>
-
-        <!-- ✅ PHẦN CHỈNH SỬA: CHỌN NHIỀU SÁCH BẰNG SELECT2 -->
-        <div class="form-group">
-            <label for="bookIds">Sách mượn</label>
-            <select id="bookIds" name="bookIds" multiple="multiple" class="form-control" required>
-                <option th:each="book : ${books}"
-                        th:value="${book.id}"
-                        th:text="${book.title}"
-                        th:selected="${record.bookIds != null and record.bookIds.contains(book.id)}">
-                </option>
+            <label>Chọn sách mượn</label>
+            <select id="bookSelect" class="form-control" style="width: 100%" multiple>
+                <option th:each="book : ${books}" th:value="${book.id}" th:text="${book.title}"></option>
             </select>
         </div>
-        <!-- ✅ HẾT PHẦN CHỈNH SỬA -->
 
-        <div class="form-group text-right">
-            <button type="submit" class="btn btn-success">💾 Lưu đơn mượn</button>
+        <!-- Danh sách sách được chọn -->
+        <div id="bookItems" class="form-group">
+            <!-- Các sách đã chọn sẽ hiển thị tại đây -->
         </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="icon">💾</i> <span th:text="${record.id != null ? 'Cập nhật' : 'Lưu'}"></span>
+        </button>
     </form>
 </div>
+
+<!-- Script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#bookSelect').select2({
+            placeholder: "Chọn sách muốn mượn",
+            allowClear: true
+        });
+
+        $('#bookSelect').on('select2:select', function (e) {
+            const bookId = e.params.data.id;
+            const bookTitle = e.params.data.text;
+
+            const exists = $('#bookItems .book-id-hidden').filter(function () {
+                return $(this).val() == bookId;
+            }).length > 0;
+
+            if (exists) {
+                alert('Sách đã được chọn!');
+                return;
+            }
+
+            const index = $('#bookItems .book-item-row').length;
+
+            const newRow = `
+                <div class="book-item-row" style="margin-bottom: 10px;">
+                    <input type="hidden" name="items[${index}].book.id" value="${bookId}" class="book-id-hidden"/>
+                    <input type="hidden" name="items[${index}].returnStatus" value="NOT_RETURNED"/>
+                    <span><b>${bookTitle}</b></span><br/>
+                    <label>Ngày trả dự kiến:</label>
+                    <input type="date" name="items[${index}].expectedReturnDate" required>
+                    <button type="button" class="btn btn-danger" onclick="removeBookRow(this)">X</button>
+                </div>
+            `;
+
+            $('#bookItems').append(newRow);
+        });
+    });
+
+    function removeBookRow(btn) {
+        $(btn).closest('.book-item-row').remove();
+    }
+</script>
 </body>
 </html>

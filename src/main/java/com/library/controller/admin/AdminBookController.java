@@ -113,7 +113,7 @@ public class AdminBookController {
             }
 
             if (book.getId() == null) {
-                bookService.createBook(book);
+                bookService.updateBook(book);
                 redirectAttributes.addFlashAttribute("success", "Thêm sách thành công!");
             } else {
                 bookService.updateBook(book);

@@ -38,13 +38,14 @@ public class BookService {
         return bookRepository.findById(id);
     }
     
-    public Book createBook(Book book) {
-        book.setCreatedBy(getCurrentUsername());
-        return bookRepository.save(book);
-    }
+
     
     public Book updateBook(Book book) {
-        book.setUpdatedBy(getCurrentUsername());
+        String username = getCurrentUsername(); //không có thì tạo mới luôn
+        if (book.getId() == null) {
+            book.setCreatedBy(username);
+        }
+        book.setUpdatedBy(username);
         return bookRepository.save(book);
     }
     

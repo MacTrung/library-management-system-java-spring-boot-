@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chỉnh sửa thông tin cá nhân</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <h1>Thông tin cá nhân (có thể chỉnh sửa)</h1>
+
+    <!-- Hiển thị thông báo -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <form th:action="@{profile/edit}" th:object="${user}" method="post" class="profile-form">
+        <input type="hidden" th:field="*{id}"/>
+
+        <div class="form-group">
+            <label>Họ</label>
+            <input type="text" th:field="*{firstName}" required/>
+        </div>
+
+        <div class="form-group">
+            <label>Tên</label>
+            <input type="text" th:field="*{lastName}" required/>
+        </div>
+
+        <div class="form-group">
+            <label>Năm sinh</label>
+            <input type="number" th:field="*{birthYear}"/>
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" th:field="*{email}" required/>
+        </div>
+
+        <div class="form-group">
+            <label>Số điện thoại</label>
+            <input type="text" th:field="*{phone}"/>
+        </div>
+
+        <div class="form-group">
+            <label>Địa chỉ</label>
+            <textarea th:field="*{address}"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Mật khẩu mới (nếu muốn thay đổi)</label>
+            <input type="password" th:field="*{password}" placeholder="Để trống nếu không đổi mật khẩu"/>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">💾 Cập nhật</button>
+            <a th:href="@{/dashboard}" class="btn btn-secondary">⬅ Quay lại</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

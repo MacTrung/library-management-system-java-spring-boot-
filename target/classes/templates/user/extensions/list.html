@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Yêu cầu gia hạn</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+<!--    <div class="page-header">-->
+<!--        <h1>Danh sách yêu cầu gia hạn</h1>-->
+<!--    </div>-->
+
+    <div class="page-header">
+        <h1 style="display: inline-block;">Danh sách yêu cầu gia hạn</h1>
+        <a th:href="@{/user/extensions/create}"
+           th:if="${notActive == null || !notActive}"
+           class="btn btn-success"
+           style="float: right; margin-top: 10px;">+ Tạo yêu cầu gia hạn</a>
+    </div>
+
+
+    <!-- Cảnh báo nếu user không hoạt động -->
+    <div th:if="${notActive}" class="alert alert-danger">
+        Tài khoản của bạn hiện đang bị khóa. Bạn không thể gửi yêu cầu gia hạn mới.
+    </div>
+
+    <!-- Form tìm kiếm -->
+    <form method="get" th:action="@{/user/extensions}">
+        <div class="form-row">
+            <div class="form-group">
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm theo mã đơn mượn, mã yêu cầu, tên sách...">
+            </div>
+            <div class="form-group">
+                <label for="status">Trạng thái:</label>
+                <select name="status" id="status">
+                    <option value="">Tất cả</option>
+                    <option th:each="st : ${T(com.library.entity.ExtensionStatus).values()}"
+                            th:value="${st}" th:text="${st}"
+                            th:selected="${status} == ${st}"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fromDate">Từ ngày:</label>
+                <input type="date" id="fromDate" name="fromDate" th:value="${fromDate}">
+            </div>
+            <div class="form-group">
+                <label for="toDate">Đến ngày:</label>
+                <input type="date" id="toDate" name="toDate" th:value="${toDate}">
+            </div>
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </div>
+    </form>
+
+    <!-- Bảng kết quả -->
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>Mã yêu cầu</th>
+            <th>Mã đơn mượn</th>
+            <th>Tên sách</th>
+            <th>Lý do</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="rq : ${requests.content}">
+            <td th:text="${rq.requestCode}"></td>
+            <td th:text="${rq.borrowRecord.borrowCode}"></td>
+            <td th:text="${rq.book.title}"></td>
+            <td th:text="${rq.reason}"></td>
+            <td th:text="${rq.status}"></td>
+            <td th:text="${#temporals.format(rq.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+            <td>
+                <form th:action="@{/user/extensions/{id}/cancel(id=${rq.id})}" method="post"
+                      th:if="${rq.canBeCancelled()}">
+                    <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Bạn có chắc muốn hủy yêu cầu này?')">Hủy</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${requests.totalElements == 0}">
+            <td colspan="7">Không tìm thấy yêu cầu nào phù hợp.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Phân trang -->
+    <div class="pagination" th:if="${requests.totalPages > 1}">
+        <a th:if="${requests.hasPrevious()}"
+           th:href="@{/user/extensions(page=${requests.number - 1}, keyword=${keyword}, status=${status}, fromDate=${fromDate}, toDate=${toDate})}"
+           class="btn btn-sm">Trước</a>
+
+        <span th:each="i : ${#numbers.sequence(0, requests.totalPages - 1)}">
+            <a th:if="${i != requests.number}"
+               th:href="@{/user/extensions(page=${i}, keyword=${keyword}, status=${status}, fromDate=${fromDate}, toDate=${toDate})}"
+               th:text="${i + 1}" class="btn btn-sm"></a>
+            <span th:if="${i == requests.number}" th:text="${i + 1}" class="btn btn-sm btn-primary"></span>
+        </span>
+
+        <a th:if="${requests.hasNext()}"
+           th:href="@{/user/extensions(page=${requests.number + 1}, keyword=${keyword}, status=${status}, fromDate=${fromDate}, toDate=${toDate})}"
+           class="btn btn-sm">Sau</a>
+    </div>
+</div>
+
+</body>
+</html>

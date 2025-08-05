@@ -88,6 +88,9 @@
                         <a th:href="@{/admin/borrows/{id}(id=${record.id})}" class="btn btn-sm btn-info" title="Xem chi tiết">
                             <i class="icon">👁</i>
                         </a>
+                        <a th:href="@{/admin/borrows/{id}/edit(id=${record.id})}" class="btn btn-sm btn-warning" title="Sửa đơn mượn">
+                            <i class="icon">✏️</i>
+                        </a>
                         <form th:action="@{/admin/borrows/{id}/delete(id=${record.id})}" method="post"
                               style="display: inline;"
                               onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn mượn này?')">

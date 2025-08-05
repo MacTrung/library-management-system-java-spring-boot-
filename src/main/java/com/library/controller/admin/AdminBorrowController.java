@@ -88,13 +88,26 @@ public class AdminBorrowController {
     @PostMapping("/{id}/delete")
     public String deleteBorrow(@PathVariable Long id, RedirectAttributes redirect) {
         try {
+            BorrowRecord record = borrowService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn mượn"));
+
+            // Cập nhật lại can_borrow = true cho mỗi sách
+            record.getItems().forEach(item -> {
+                if (item.getBook() != null) {
+                    item.getBook().setCanBorrow(true);
+                    bookService.updateBook(item.getBook());
+                }
+            });
+
+            // Sau khi cập nhật, xóa đơn mượn
             borrowService.deleteBorrowRecord(id);
-            redirect.addFlashAttribute("success", "Xóa đơn mượn thành công.");
+            redirect.addFlashAttribute("success", "Xóa đơn mượn thành công và cập nhật trạng thái sách.");
         } catch (Exception e) {
             redirect.addFlashAttribute("error", "Không thể xóa đơn mượn: " + e.getMessage());
         }
         return "redirect:/admin/borrows";
     }
+
 
     @GetMapping("/create")
     public String createForm(Model model) {
@@ -156,6 +169,18 @@ public class AdminBorrowController {
         }
         return "redirect:/admin/borrows";
     }
+
+    @GetMapping("/{id}/edit")
+    public String editForm(@PathVariable Long id, Model model) {
+        BorrowRecord record = borrowService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn mượn"));
+
+        model.addAttribute("record", record);
+        model.addAttribute("users", userService.findAllUsers());
+        model.addAttribute("books", bookService.findAllAvailableBooks());
+        return "admin/borrows/form";
+    }
+
 
 
 

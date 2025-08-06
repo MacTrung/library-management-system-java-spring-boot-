@@ -15,24 +15,34 @@ import java.util.List;
 
 @Repository
 public interface ExtensionRequestRepository extends JpaRepository<ExtensionRequest, Long> {
-    
+
     @Query("SELECT DISTINCT er FROM ExtensionRequest er " +
-           "LEFT JOIN er.borrowRecord br " +
-           "LEFT JOIN er.book b " +
-           "WHERE (:keyword IS NULL OR :keyword = '' OR " +
-           "LOWER(er.requestCode) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(br.borrowCode) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
-           "(:status IS NULL OR er.status = :status) AND " +
-           "(:borrower IS NULL OR br.borrower = :borrower) AND " +
-           "(:fromDate IS NULL OR er.createdAt >= :fromDate) AND " +
-           "(:toDate IS NULL OR er.createdAt <= :toDate)")
-    Page<ExtensionRequest> findByKeywordAndFilters(@Param("keyword") String keyword,
-                                                  @Param("status") ExtensionStatus status,
-                                                  @Param("borrower") User borrower,
-                                                  @Param("fromDate") LocalDateTime fromDate,
-                                                  @Param("toDate") LocalDateTime toDate,
-                                                  Pageable pageable);
+            "LEFT JOIN er.borrowRecord br " +
+            "LEFT JOIN er.book b " +
+            "WHERE (:keyword IS NULL OR :keyword = '' OR " +
+            "LOWER(er.requestCode) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(br.borrowCode) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
+            "(:status IS NULL OR er.status = :status) AND " +
+            "(:borrower IS NULL OR br.borrower = :borrower) AND " +
+            "(:fromDate IS NULL OR er.createdAt >= :fromDate) AND " +
+            "(:toDate IS NULL OR er.createdAt <= :toDate) " +
+            "ORDER BY " +
+            "CASE er.status " +
+            "    WHEN com.library.entity.ExtensionStatus.CREATED THEN 0 " +
+            "    WHEN com.library.entity.ExtensionStatus.PROCESSING THEN 1 " +
+            "    WHEN com.library.entity.ExtensionStatus.APPROVED THEN 2 " +
+            "    WHEN com.library.entity.ExtensionStatus.REJECTED THEN 3 " +
+            "    WHEN com.library.entity.ExtensionStatus.CANCELLED THEN 4 " +
+            "    ELSE 5 " +
+            "END, er.createdAt DESC")
+    Page<ExtensionRequest> findByKeywordAndFilters(
+            @Param("keyword") String keyword,
+            @Param("status") ExtensionStatus status,
+            @Param("borrower") User borrower,
+            @Param("fromDate") LocalDateTime fromDate,
+            @Param("toDate") LocalDateTime toDate,
+            Pageable pageable);
 
     @Query("SELECT er FROM ExtensionRequest er WHERE er.borrowRecord.borrower = :borrower")
     List<ExtensionRequest> findByBorrower(@Param("borrower") User borrower);

@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -166,6 +164,42 @@ public class BorrowService {
                                 item.getReturnDate() == null
                 );
     }
+
+    //đếm sách mượn
+    public int countBorrowingBooksByUser(User user) {
+        return (int) findByBorrower(user).stream()
+                .flatMap(r -> r.getItems().stream())
+                .filter(item -> item.getReturnDate() == null)
+                .count();
+    }
+
+    //đếm sách quá hạn
+    public int countOverdueBooksByUser(User user) {
+        LocalDate today = LocalDate.now();
+        return (int) findByBorrower(user).stream()
+                .flatMap(r -> r.getItems().stream())
+                .filter(item -> item.getReturnDate() == null &&
+                        item.getExpectedReturnDate() != null &&
+                        item.getExpectedReturnDate().isBefore(today))
+                .count();
+    }
+
+    public Map<String, Object> getMonthlyBorrowStats() {
+        List<Object[]> rawStats = borrowRecordRepository.countByMonthLast6Months(); // custom query
+        List<String> labels = new ArrayList<>();
+        List<Integer> values = new ArrayList<>();
+
+        for (Object[] row : rawStats) {
+            labels.add(row[0].toString()); // "2025-04" or "T4"
+            values.add(((Number) row[1]).intValue());
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("labels", labels);
+        result.put("values", values);
+        return result;
+    }
+
 
 
 

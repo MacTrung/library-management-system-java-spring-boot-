@@ -103,7 +103,7 @@
                         <td th:text="${book.bookshelf?.code}"></td>
                         <td>
                             <div class="action-buttons">
-                                <a th:href="@{/books/{id}(id=${book.id})}" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                <a th:href="@{/templates/user/books/{id}(id=${book.id})}" class="btn btn-sm btn-info" title="Xem chi tiết">
                                     <i class="icon">👁</i>
                                 </a>
                                 <a th:href="@{/admin/books/{id}/edit(id=${book.id})}" class="btn btn-sm btn-warning" title="Chỉnh sửa">

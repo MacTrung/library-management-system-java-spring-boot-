@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
     
@@ -40,4 +42,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Query("SELECT COUNT(DISTINCT bri.book) FROM BorrowRecordItem bri WHERE bri.returnDate IS NULL AND bri.expectedReturnDate < CURRENT_DATE")
     long countOverdueBooks();
+
+    @Query("SELECT g.name, COUNT(b.id) " +
+            "FROM Book b JOIN b.genres g " +
+            "GROUP BY g.name ORDER BY COUNT(b.id) DESC")
+    List<Object[]> countBooksByGenre();
+
 }

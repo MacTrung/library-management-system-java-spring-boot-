@@ -39,4 +39,7 @@ public interface ExtensionRequestRepository extends JpaRepository<ExtensionReque
 
     @Query("SELECT COUNT(er) FROM ExtensionRequest er WHERE er.status IN :statuses")
     long countByStatusIn(@Param("statuses") List<ExtensionStatus> statuses);
+
+    int countByBorrowRecord_Borrower(User borrower);
+
 }

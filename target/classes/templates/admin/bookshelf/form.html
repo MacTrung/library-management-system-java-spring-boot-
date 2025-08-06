@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${bookshelf.id != null ? 'Chỉnh sửa tủ sách' : 'Thêm tủ sách'}"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1 th:text="${bookshelf.id != null ? 'Chỉnh sửa tủ sách' : 'Thêm tủ sách'}"></h1>
+        <a th:href="@{/admin/bookshelves}" class="btn btn-secondary">← Quay lại danh sách</a>
+    </div>
+
+    <form th:action="@{${bookshelf.id != null} ? '/admin/bookshelves/' + ${bookshelf.id} + '/edit' : '/admin/bookshelves/create'}"
+          th:object="${bookshelf}" method="post">
+
+        <input type="hidden" th:if="${bookshelf.id != null}" th:field="*{id}"/>
+
+        <div class="form-group">
+            <label>Mã tủ</label>
+            <input type="text" th:field="*{code}" placeholder="Nhập mã tủ" required>
+        </div>
+
+        <div class="form-group">
+            <label>Tầng</label>
+            <input type="number" th:field="*{floor}" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label>Dãy</label>
+            <input type="text" th:field="*{section}" placeholder="Nhập dãy" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">💾 <span th:text="${bookshelf.id != null ? 'Cập nhật' : 'Lưu'}"></span></button>
+    </form>
+</div>
+</body>
+</html>

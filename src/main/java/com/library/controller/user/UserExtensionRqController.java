@@ -96,6 +96,7 @@ public class UserExtensionRqController {
     // POST - Gửi yêu cầu gia hạn
     @PostMapping("/create")
     public String createRequest(@ModelAttribute("extensionRequest") @Valid ExtensionRequest extensionRequest,
+                                @RequestParam("borrowRecordId") Long borrowRecordId,
                                 BindingResult result,
                                 Model model) {
         User user = getCurrentUser();
@@ -110,11 +111,18 @@ public class UserExtensionRqController {
             return "user/extensions/create";
         }
 
+        // Gán thủ công borrowRecord cho extensionRequest
+        extensionRequest.setBorrowRecord(
+                borrowService.findById(borrowRecordId)
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn mượn"))
+        );
+
         extensionRequest.setStatus(ExtensionStatus.CREATED);
         extensionRequestService.createExtensionRequest(extensionRequest);
 
         return "redirect:/user/extensions";
     }
+
 
     // POST - Hủy yêu cầu gia hạn
     @PostMapping("/{id}/cancel")

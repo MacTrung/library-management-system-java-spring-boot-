@@ -92,4 +92,11 @@ public class ExtensionRequestService {
             return "system";
         }
     }
+
+    public int countByUser(User user) {
+        return extensionRequestRepository.countByBorrowRecord_Borrower(user);
+    }
+
+
+
 }

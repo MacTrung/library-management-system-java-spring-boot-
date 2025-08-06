@@ -10,8 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -72,4 +71,21 @@ public class BookService {
             return "system";
         }
     }
+
+    public Map<String, Object> getGenreDistribution() {
+        List<Object[]> rawStats = bookRepository.countBooksByGenre();
+        List<String> labels = new ArrayList<>();
+        List<Integer> values = new ArrayList<>();
+
+        for (Object[] row : rawStats) {
+            labels.add((String) row[0]);
+            values.add(((Number) row[1]).intValue());
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("labels", labels);
+        result.put("values", values);
+        return result;
+    }
+
 }

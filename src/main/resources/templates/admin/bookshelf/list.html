@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý tủ sách</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Quản lý tủ sách</h1>
+        <a th:href="@{/admin/bookshelves/create}" class="btn btn-primary">
+            ➕ Thêm tủ sách
+        </a>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <div class="search-form">
+        <form th:action="@{/admin/bookshelves}" method="get">
+            <div class="form-row">
+                <div class="form-group">
+                    <input type="text" name="keyword" placeholder="Tìm theo mã, dãy..." th:value="${keyword}">
+                </div>
+                <div class="form-group">
+                    <input type="number" name="floor" placeholder="Tầng" th:value="${floor}">
+                </div>
+                <button type="submit" class="btn btn-primary">🔍 Tìm kiếm</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Mã tủ</th>
+                <th>Tầng</th>
+                <th>Dãy</th>
+                <th>Số sách</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="bs : ${pageData.content}">
+                <td th:text="${bs.code}"></td>
+                <td th:text="${bs.floor}"></td>
+                <td th:text="${bs.section}"></td>
+                <td th:text="${#lists.size(bs.books)}"></td>
+                <td>
+                    <a th:href="@{/admin/bookshelves/{id}/edit(id=${bs.id})}" class="btn btn-sm btn-warning">✏️</a>
+                    <form th:action="@{/admin/bookshelves/{id}/delete(id=${bs.id})}" method="post"
+                          style="display:inline"
+                          onsubmit="return confirm('Xác nhận xoá tủ sách này?')">
+                        <button type="submit" class="btn btn-sm btn-danger">🗑</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${pageData.totalElements == 0}">
+                <td colspan="5">Không có dữ liệu</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" th:if="${pageData.totalPages > 1}">
+        <a th:if="${pageData.hasPrevious()}"
+           th:href="@{/admin/bookshelves(page=${pageData.number - 1})}" class="btn btn-sm">« Trước</a>
+
+        <span th:each="i : ${#numbers.sequence(0, pageData.totalPages - 1)}">
+            <a th:if="${i != pageData.number}"
+               th:href="@{/admin/bookshelves(page=${i})}" th:text="${i + 1}" class="btn btn-sm"></a>
+            <span th:if="${i == pageData.number}" th:text="${i + 1}" class="btn btn-sm btn-primary"></span>
+        </span>
+
+        <a th:if="${pageData.hasNext()}"
+           th:href="@{/admin/bookshelves(page=${pageData.number + 1})}" class="btn btn-sm">Sau »</a>
+    </div>
+</div>
+</body>
+</html>

@@ -18,24 +18,25 @@
             <div class="dashboard-stats">
                 <div class="stat-card">
                     <h3>Sách đang mượn</h3>
-                    <div class="stat-number">3</div>
+                    <div class="stat-number" th:text="${borrowedBooks}">0</div>
                 </div>
-                
+
                 <div class="stat-card">
                     <h3>Sách quá hạn</h3>
-                    <div class="stat-number">0</div>
+                    <div class="stat-number" th:text="${overdueBooks}">0</div>
                 </div>
-                
+
                 <div class="stat-card">
                     <h3>Yêu cầu gia hạn</h3>
-                    <div class="stat-number">1</div>
+                    <div class="stat-number" th:text="${extensionCount}">0</div>
                 </div>
+
             </div>
             
             <div class="dashboard-actions">
                 <h2>Chức năng</h2>
                 <div class="action-grid">
-                    <a href="/books" class="action-card">
+                    <a href="/user/books" class="action-card">
                         <h3>Tìm kiếm sách</h3>
                         <p>Tìm kiếm và xem thông tin sách</p>
                     </a>

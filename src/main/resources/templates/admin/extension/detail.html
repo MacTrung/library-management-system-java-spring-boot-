@@ -1,0 +1,39 @@
+<!-- templates/admin/extension/detail.html -->
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết yêu cầu gia hạn</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <h1>Chi tiết yêu cầu gia hạn</h1>
+
+    <div class="detail-card">
+        <p><strong>Mã yêu cầu:</strong> <span th:text="${request.requestCode}"></span></p>
+        <p><strong>Mã đơn mượn:</strong> <span th:text="${request.borrowRecord.borrowCode}"></span></p>
+        <p><strong>Sách:</strong> <span th:text="${request.book.title}"></span></p>
+        <p><strong>Lý do:</strong> <span th:text="${request.reason}"></span></p>
+        <p><strong>Trạng thái:</strong>
+            <span class="badge"
+                  th:classappend="' badge-' + (${request.status.name()} == 'PENDING' ? 'warning' :
+                                               (${request.status.name()} == 'APPROVED' ? 'success' :
+                                               (${request.status.name()} == 'REJECTED' ? 'danger' : 'secondary')))"
+                  th:text="${request.status}"></span>
+        </p>
+        <p><strong>Ngày tạo:</strong> <span th:text="${#temporals.format(request.createdAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+        <p><strong>Xử lý bởi:</strong>
+            <span th:text="${request.processedBy != null ? request.processedBy : 'Chưa xử lý'}"></span>
+        </p>
+        <p><strong>Thời gian xử lý:</strong>
+            <span th:text="${request.processedAt != null ? #temporals.format(request.processedAt, 'dd/MM/yyyy HH:mm') : 'Chưa xử lý'}"></span>
+        </p>
+    </div>
+
+    <a th:href="@{/admin/extension-requests}" class="btn btn-secondary">← Quay lại danh sách</a>
+</div>
+</body>
+</html>

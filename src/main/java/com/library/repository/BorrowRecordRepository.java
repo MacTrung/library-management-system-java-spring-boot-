@@ -46,4 +46,14 @@ public interface BorrowRecordRepository extends JpaRepository<BorrowRecord, Long
     @Query("SELECT COUNT(br) FROM BorrowRecord br WHERE br.borrowDate BETWEEN :fromDate AND :toDate")
     long countBorrowRecordsByDateRange(@Param("fromDate") LocalDate fromDate, 
                                       @Param("toDate") LocalDate toDate);
+
+    @Query(value = """
+        SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, COUNT(*) AS total
+        FROM borrow_records
+        WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+        GROUP BY month
+        ORDER BY month
+        """, nativeQuery = true)
+    List<Object[]> countByMonthLast6Months();
+
 }

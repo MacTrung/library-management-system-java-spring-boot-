@@ -28,7 +28,7 @@
         </div>
         
         <div class="search-form">
-            <form th:action="@{/books}" method="get">
+            <form th:action="@{/user/books}" method="get">
                 <div class="form-row">
                     <div class="form-group">
                         <input type="text" name="keyword" th:value="${keyword}" 
@@ -63,14 +63,14 @@
                 <thead>
                     <tr>
                         <th>
-                            <a th:href="@{/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, sortBy='title', sortDir=${sortBy == 'title' and sortDir == 'asc' ? 'desc' : 'asc'})}">
+                            <a th:href="@{/user/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, sortBy='title', sortDir=${sortBy == 'title' and sortDir == 'asc' ? 'desc' : 'asc'})}">
                                 Tên sách
                                 <span th:if="${sortBy == 'title'}" th:class="${sortDir == 'asc' ? 'sort-asc' : 'sort-desc'}"></span>
                             </a>
                         </th>
                         <th>Tác giả</th>
                         <th>
-                            <a th:href="@{/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, sortBy='publicationYear', sortDir=${sortBy == 'publicationYear' and sortDir == 'asc' ? 'desc' : 'asc'})}">
+                            <a th:href="@{/user/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, sortBy='publicationYear', sortDir=${sortBy == 'publicationYear' and sortDir == 'asc' ? 'desc' : 'asc'})}">
                                 Năm xuất bản
                             </a>
                         </th>
@@ -95,7 +95,7 @@
                             <span th:unless="${book.canBorrow}" class="badge badge-danger">Không</span>
                         </td>
                         <td>
-                            <a th:href="@{/books/{id}(id=${book.id})}" class="btn btn-sm btn-info">Xem</a>
+                            <a th:href="@{/user/books/{id}(id=${book.id})}" class="btn btn-sm btn-info">Xem</a>
                             <a th:href="@{/user/borrow/request/{id}(id=${book.id})}" class="btn btn-sm btn-success">Mượn</a>
 
 
@@ -107,18 +107,18 @@
         
         <div class="pagination" th:if="${books.totalPages > 1}">
             <a th:if="${books.hasPrevious()}" 
-               th:href="@{/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${books.number - 1}, sortBy=${sortBy}, sortDir=${sortDir})}"
+               th:href="@{/user/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${books.number - 1}, sortBy=${sortBy}, sortDir=${sortDir})}"
                class="btn btn-sm">Trước</a>
             
             <span th:each="i : ${#numbers.sequence(0, books.totalPages - 1)}">
                 <a th:if="${i != books.number}"
-                   th:href="@{/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${i}, sortBy=${sortBy}, sortDir=${sortDir})}"
+                   th:href="@{/user/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${i}, sortBy=${sortBy}, sortDir=${sortDir})}"
                    th:text="${i + 1}" class="btn btn-sm"></a>
                 <span th:if="${i == books.number}" th:text="${i + 1}" class="btn btn-sm btn-primary"></span>
             </span>
             
             <a th:if="${books.hasNext()}" 
-               th:href="@{/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${books.number + 1}, sortBy=${sortBy}, sortDir=${sortDir})}"
+               th:href="@{/user/books(keyword=${keyword}, condition=${condition}, canBorrow=${canBorrow}, page=${books.number + 1}, sortBy=${sortBy}, sortDir=${sortDir})}"
                class="btn btn-sm">Sau</a>
         </div>
     </div>

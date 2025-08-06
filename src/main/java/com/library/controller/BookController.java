@@ -13,7 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/books")
+@RequestMapping("/user/books")
 public class BookController {
 
     @Autowired
@@ -43,7 +43,7 @@ public class BookController {
         model.addAttribute("sortDir", sortDir);
         model.addAttribute("conditions", BookCondition.values());
         
-        return "books/list";
+        return "/user/books/list";
     }
 
     @GetMapping("/{id}")
@@ -51,6 +51,6 @@ public class BookController {
         Book book = bookService.findById(id)
             .orElseThrow(() -> new RuntimeException("Book not found"));
         model.addAttribute("book", book);
-        return "books/view";
+        return "/user/books/view";
     }
 }

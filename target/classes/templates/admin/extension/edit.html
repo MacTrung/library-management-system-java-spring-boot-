@@ -1,0 +1,67 @@
+<!-- templates/admin/extension/edit.html -->
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chỉnh sửa yêu cầu gia hạn</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Chỉnh sửa yêu cầu gia hạn</h1>
+        <a th:href="@{/admin/extension-requests}" class="btn btn-secondary">← Quay lại danh sách</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <form th:action="@{/admin/extension/update}" th:object="${request}" method="post">
+        <input type="hidden" th:field="*{id}"/>
+
+        <!-- Mã yêu cầu -->
+        <div class="form-group">
+            <label for="requestCode">Mã yêu cầu</label>
+            <input type="text" id="requestCode" th:field="*{requestCode}" readonly>
+        </div>
+
+        <!-- Mã đơn mượn -->
+        <div class="form-group">
+            <label>Mã đơn mượn</label>
+            <input type="text" th:value="*{borrowRecord.borrowCode}" readonly>
+        </div>
+
+        <!-- Tên sách -->
+        <div class="form-group">
+            <label>Tên sách</label>
+            <input type="text" th:value="*{book.title}" readonly>
+        </div>
+
+        <!-- Lý do -->
+        <div class="form-group">
+            <label for="reason">Lý do</label>
+            <textarea id="reason" th:field="*{reason}" rows="4" placeholder="Nhập lý do gia hạn"></textarea>
+        </div>
+
+        <!-- Trạng thái -->
+        <div class="form-group">
+            <label for="status">Trạng thái</label>
+            <select id="status" th:field="*{status}">
+                <option value="">-- Chọn trạng thái --</option>
+                <option th:each="status : ${statusList}"
+                        th:value="${status}"
+                        th:text="${status}">
+                </option>
+            </select>
+        </div>
+
+
+        <button type="submit" class="btn btn-success">
+            <i class="icon">💾</i> Lưu thay đổi
+        </button>
+    </form>
+</div>
+</body>
+</html>

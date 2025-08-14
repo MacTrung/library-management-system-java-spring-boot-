@@ -39,13 +39,21 @@ public interface BorrowRecordRepository extends JpaRepository<BorrowRecord, Long
            "WHERE bri.returnDate IS NULL AND bri.expectedReturnDate < :currentDate")
     List<BorrowRecord> findOverdueRecords(@Param("currentDate") LocalDate currentDate);
 
-    @Query("SELECT br FROM BorrowRecord br WHERE br.borrower = :borrower AND br.borrowDate >= :fromDate")
-    List<BorrowRecord> findByBorrowerAndDateRange(@Param("borrower") User borrower, 
-                                                 @Param("fromDate") LocalDate fromDate);
 
-    @Query("SELECT COUNT(br) FROM BorrowRecord br WHERE br.borrowDate BETWEEN :fromDate AND :toDate")
-    long countBorrowRecordsByDateRange(@Param("fromDate") LocalDate fromDate, 
-                                      @Param("toDate") LocalDate toDate);
+//    @Query("SELECT br FROM BorrowRecord br WHERE br.borrower = :borrower AND br.borrowDate >= :fromDate")
+//    List<BorrowRecord> findByBorrowerAndDateRange(@Param("borrower") User borrower,
+//                                                 @Param("fromDate") LocalDate fromDate);
+//    đã bị thay bơởi thg dưới
+    List<BorrowRecord> findByBorrowerAndBorrowDateGreaterThanEqual(
+            User borrower, LocalDate fromDate
+    );
+
+
+//    @Query("SELECT COUNT(br) FROM BorrowRecord br WHERE br.borrowDate BETWEEN :fromDate AND :toDate")
+//    long countBorrowRecordsByDateRange(@Param("fromDate") LocalDate fromDate,
+//                                      @Param("toDate") LocalDate toDate);
+//      bị thay bởi thg dưới
+    long countByBorrowDateBetween(LocalDate fromDate, LocalDate toDate);
 
     @Query(value = """
         SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, COUNT(*) AS total
@@ -53,7 +61,6 @@ public interface BorrowRecordRepository extends JpaRepository<BorrowRecord, Long
         WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
         GROUP BY month
         ORDER BY month
-        """, nativeQuery = true)
+    """, nativeQuery = true)
     List<Object[]> countByMonthLast6Months();
-
 }

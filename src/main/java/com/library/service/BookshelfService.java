@@ -20,43 +20,51 @@ public class BookshelfService {
     private BookshelfRepository bookshelfRepository;
     
     public Page<Bookshelf> findBookshelves(String keyword, Integer floor, Pageable pageable) {
-        return bookshelfRepository.findByKeywordAndFloor(keyword, floor, pageable);
+        //return bookshelfRepository.findByKeywordAndFloor(keyword, floor, pageable);
+        if (floor == null && keyword == null) {
+            return bookshelfRepository.findAll(pageable);
+        }else {
+            return bookshelfRepository.findByCodeContainingIgnoreCaseOrSectionContainingIgnoreCaseAndFloor(
+                    keyword,
+                    keyword,
+                    floor,
+                    pageable);
+        }
     }
-    
+
+
     public List<Bookshelf> findAllBookshelves() {
         return bookshelfRepository.findAll();
     }
-    
+
     public Optional<Bookshelf> findById(Long id) {
         return bookshelfRepository.findById(id);
     }
-    
+
     public Bookshelf createBookshelf(Bookshelf bookshelf) {
         bookshelf.setCreatedBy(getCurrentUsername());
         return bookshelfRepository.save(bookshelf);
     }
-    
+
     public Bookshelf updateBookshelf(Bookshelf bookshelf) {
         bookshelf.setUpdatedBy(getCurrentUsername());
         return bookshelfRepository.save(bookshelf);
     }
-    
+
     public void deleteBookshelf(Long id) {
         Bookshelf bookshelf = bookshelfRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Bookshelf not found"));
-        
+                .orElseThrow(() -> new RuntimeException("Bookshelf not found"));
+
         if (!bookshelf.canBeDeleted()) {
             throw new RuntimeException("Cannot delete bookshelf with books");
         }
-        
+
         bookshelfRepository.deleteById(id);
     }
-    
+
     private String getCurrentUsername() {
-        try {
-            return SecurityContextHolder.getContext().getAuthentication().getName();
-        } catch (Exception e) {
-            return "system";
-        }
+        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .map(auth -> auth.getName())
+                .orElse("system");
     }
 }

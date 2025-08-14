@@ -21,6 +21,7 @@ public class AuthorService {
     
     public Page<Author> findAuthors(String keyword, Integer birthYear, Integer deathYear, Pageable pageable) {
         return authorRepository.findByKeywordAndFilters(keyword, birthYear, deathYear, pageable);
+
     }
     
     public List<Author> findAllAuthors() {

@@ -26,6 +26,7 @@ public class AdminBookshelfController {
                                   @RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "10") int size,
                                   Model model) {
+
         Page<Bookshelf> pageData = bookshelfService.findBookshelves(keyword, floor, PageRequest.of(page, size));
         model.addAttribute("pageData", pageData);
         model.addAttribute("keyword", keyword);

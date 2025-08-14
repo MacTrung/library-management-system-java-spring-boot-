@@ -1,5 +1,8 @@
 package com.library.entity;
 
+import lombok.Getter;
+
+@Getter
 public enum ReturnStatus {
     NOT_RETURNED("Chưa trả"),
     RETURNED_ON_TIME("Trả đúng hạn"),
@@ -10,9 +13,5 @@ public enum ReturnStatus {
 
     ReturnStatus(String displayName) {
         this.displayName = displayName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
     }
 }

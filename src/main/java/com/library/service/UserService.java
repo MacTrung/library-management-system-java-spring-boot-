@@ -3,6 +3,7 @@ package com.library.service;
 import com.library.entity.User;
 import com.library.entity.UserRole;
 import com.library.entity.UserStatus;
+import com.library.exception.custom.UserNotFoundException;
 import com.library.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -49,15 +50,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(User user) {
-
-        user.setUpdatedBy(getCurrentUsername());
-        return userRepository.save(user);
-    }
     
-    public User updateUserProfile(User user) {
+    public User updateUserProfile(User user) throws UserNotFoundException {
         User existingUser = userRepository.findById(user.getId())
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new UserNotFoundException("không tìm thấy id: "+user.getId()));
 
         // Nếu không nhập password mới → giữ lại password cũ
         if (user.getPassword() == null || user.getPassword().isBlank()) {

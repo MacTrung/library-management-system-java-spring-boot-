@@ -37,7 +37,7 @@ public class BorrowService {
     }
     
     public List<BorrowRecord> findByBorrowerAndDateRange(User borrower, LocalDate fromDate) {
-        return borrowRecordRepository.findByBorrowerAndDateRange(borrower, fromDate);
+        return borrowRecordRepository.findByBorrowerAndBorrowDateGreaterThanEqual(borrower, fromDate);
     }
     
     public List<BorrowRecord> findOverdueRecords() {
@@ -103,7 +103,7 @@ public class BorrowService {
     }
     
     public long countBorrowRecordsByDateRange(LocalDate fromDate, LocalDate toDate) {
-        return borrowRecordRepository.countBorrowRecordsByDateRange(fromDate, toDate);
+        return borrowRecordRepository.countByBorrowDateBetween(fromDate, toDate);
     }
     
     private String getCurrentUsername() {

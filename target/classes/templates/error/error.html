@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Có lỗi xảy ra</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h1>Oops! Có lỗi xảy ra</h1>
+<p th:text="'Mã lỗi: ' + ${status}"></p>
+<p th:text="'Thông báo: ' + ${error}"></p>
+<a th:href="@{/dashboard}">Quay lại trang chủ</a>
+</body>
+</html>

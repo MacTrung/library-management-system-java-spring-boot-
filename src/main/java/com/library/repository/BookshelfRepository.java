@@ -6,17 +6,28 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookshelfRepository extends JpaRepository<Bookshelf, Long> {
     
-    @Query("SELECT bs FROM Bookshelf bs WHERE " +
-           "(:keyword IS NULL OR :keyword = '' OR " +
-           "LOWER(bs.code) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(bs.section) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
-           "(:floor IS NULL OR bs.floor = :floor)")
-    Page<Bookshelf> findByKeywordAndFloor(@Param("keyword") String keyword,
-                                         @Param("floor") Integer floor,
-                                         Pageable pageable);
+//    @Query("SELECT bs FROM Bookshelf bs WHERE " +
+//           "(:keyword IS NULL OR :keyword = '' OR " +
+//           "LOWER(bs.code) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+//           "LOWER(bs.section) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
+//           "(:floor IS NULL OR bs.floor = :floor)")
+//    Page<Bookshelf> findByKeywordAndFloor(@Param("keyword") String keyword,
+//                                         @Param("floor") Integer floor,
+//                                         Pageable pageable);
+
+
+    Page<Bookshelf> findByCodeContainingIgnoreCaseOrSectionContainingIgnoreCaseAndFloor(
+            @Nullable String code,
+            @Nullable String section,
+            @Nullable Integer floor,
+            Pageable pageable
+    );
+    //nó không tìm như cái like skip null, nó soi cả null
+
 }

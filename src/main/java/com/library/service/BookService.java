@@ -53,7 +53,7 @@ public class BookService {
     }
     
     public long countTotalBooks() {
-        return bookRepository.countTotalBooks();
+        return bookRepository.countBy();
     }
     
     public long countBorrowedBooks() {

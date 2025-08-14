@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class AuthController {
+public class UserAuthController {
 
     @Autowired
     private UserService userService;
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,
-                           @RequestParam(value = "logout", required = false) String logout,
-                           Model model) {
+                            @RequestParam(value = "logout", required = false) String logout,
+                            Model model) {
         if (error != null) {
             model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng!");
         }
@@ -41,7 +41,7 @@ public class AuthController {
                 model.addAttribute("error", "Tên đăng nhập đã tồn tại!");
                 return "register";
             }
-            
+
             userService.createUser(user);
             model.addAttribute("message", "Đăng ký thành công! Vui lòng đăng nhập.");
             return "login";

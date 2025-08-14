@@ -40,6 +40,7 @@ public class ExtensionRequestService {
     
     public ExtensionRequest createExtensionRequest(ExtensionRequest request) {
         request.setRequestCode("ER-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        //tạp 1 random uuid biến nó thành chuỗi và lấy 8 kí tự đầu và biến nó thành in hoa
         return extensionRequestRepository.save(request);
     }
     

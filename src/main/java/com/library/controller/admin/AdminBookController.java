@@ -120,6 +120,7 @@ public class AdminBookController {
                 redirectAttributes.addFlashAttribute("success", "Cập nhật sách thành công!");
             }
 
+            //sau khi thêm trở về trang sách
             return "redirect:/admin/books";
 
         } catch (Exception e) {

@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-        import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -102,7 +102,7 @@ public class AdminExtensionRqController {
         return "redirect:/admin/extension-requests";
     }
 
-    // POST: Bulk process
+    // POST: khi chọn nhiều thực hiện liên tục
     @PostMapping("/bulk-process")
     public String bulkUpdateStatus(@RequestParam List<Long> selectedIds,
                                    @RequestParam ExtensionStatus status) {
